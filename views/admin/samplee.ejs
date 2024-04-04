@@ -1,0 +1,303 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Evara Dashboard</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:title" content="">
+    <meta property="og:type" content="">
+    <meta property="og:url" content="">
+    <meta property="og:image" content="">
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="admin-assets/imgs/theme/favicon.svg">
+    <!-- Template CSS -->
+    <link href="admin-assets/css/main.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <div class="screen-overlay"></div>
+    <aside class="navbar-aside" id="offcanvas_aside">
+        <div class="aside-top">
+            <a href="index.html" class="brand-wrap">
+                <img src="admin-assets/imgs/Untitled.png" class="logo" alt="Evara Dashboard">
+            </a>
+            <div>
+                <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i> </button>
+            </div>
+        </div>
+        <nav>
+            <ul class="menu-aside">
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/userlist"> <!-- Placeholder link for Users -->
+                        <i class="icon material-icons md-person"></i>
+                        <span class="text">Users</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/product"> <!-- Placeholder link for Products -->
+                        <i class="icon material-icons md-shopping_bag"></i>
+                        <span class="text">Products</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/category"> <!-- Placeholder link for Categories -->
+                        <i class="icon material-icons md-shopping_bag"></i>
+                        <span class="text">Categories</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+    <main class="main-wrap">
+        <header class="main-header navbar">
+            <div class="col-search">
+                <form class="searchform">
+                    <div class="input-group">
+                        <input list="search_terms" type="text" class="form-control" placeholder="Search term">
+                        <button class="btn btn-light bg" type="button"> <i class="material-icons md-search"></i></button>
+                    </div>
+                    <datalist id="search_terms">
+                        <option value="Products">
+                        <option value="New orders">
+                        <option value="Apple iphone">
+                        <option value="Ahmed Hassan">
+                    </datalist>
+                </form>
+            </div>
+            <div class="col-nav">
+                <button class="btn btn-icon btn-mobile me-auto" data-trigger="#offcanvas_aside"> <i class="material-icons md-apps"></i> </button>
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link btn-icon" href="#">
+                            <i class="material-icons md-notifications animation-shake"></i>
+                            <span class="badge rounded-pill">3</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn-icon darkmode" href="#"> <i class="material-icons md-nights_stay"></i> </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="requestfullscreen nav-link btn-icon"><i class="material-icons md-cast"></i></a>
+                    </li>
+                    <li class="dropdown nav-item">
+                        <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownLanguage" aria-expanded="false"><i class="material-icons md-public"></i></a>
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownLanguage">
+                            <a class="dropdown-item text-brand" href="#"><img src="admin-assets/imgs/theme/flag-us.png" alt="English">English</a>
+                            <a class="dropdown-item" href="#"><img src="admin-assets/imgs/theme/flag-fr.png" alt="Français">Français</a>
+                            <a class="dropdown-item" href="#"><img src="admin-assets/imgs/theme/flag-jp.png" alt="Français">日本語</a>
+                            <a class="dropdown-item" href="#"><img src="admin-assets/imgs/theme/flag-cn.png" alt="Français">中国人</a>
+                        </div>
+                    </li>
+                    <li class="dropdown nav-item">
+                        <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount" aria-expanded="false"> <img class="img-xs rounded-circle" src="admin-assets/imgs/people/avatar2.jpg" alt="User"></a>
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
+                            <a class="dropdown-item" href="#"><i class="material-icons md-perm_identity"></i>Edit Profile</a>
+                            <a class="dropdown-item" href="#"><i class="material-icons md-settings"></i>Account Settings</a>
+                            <a class="dropdown-item" href="#"><i class="material-icons md-account_balance_wallet"></i>Wallet</a>
+                            <a class="dropdown-item" href="#"><i class="material-icons md-receipt"></i>Billing</a>
+                            <a class="dropdown-item" href="#"><i class="material-icons md-help_outline"></i>Help center</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-danger" href="#"><i class="material-icons md-exit_to_app"></i>Logout</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </header>
+        <section class="content-main">
+            <div class="row">
+                <div class="col-9">
+                    <div class="content-header">
+                        <h2 class="content-title">Edit Product</h2>
+                    </div>
+                    <div id="mainError"></div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h4>Basic</h4>
+                        </div>
+                        <div class="card-body">
+                            <form action="" method="post"  enctype="multipart/form-data" onsubmit="return validateForm()">
+                                <!-- Populate form fields with existing product data action="/admin/editProduct"  enctype="multipart/form-data"   -->
+                                <div class="mb-4">
+                                    <label for="product_name" class="form-label">Name</label>
+                                    <input type="text" class="form-control" name="name" id="product_name" value="<%= proData.name %>">
+                                    <p id="nameError" class="text-danger"></p>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="product_description" class="form-label">Description</label>
+                                    <textarea class="form-control" name="description" id="product_description" rows="4"><%= proData.description %></textarea>
+                                    <p id="descriptionError" class="text-danger"></p>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="mb-4">
+                                            <label for="regular_price" class="form-label">Price</label>
+                                            <input type="text" class="form-control" name="price" id="regular_price" value="<%= proData.price %>">
+                                            <p id="priceError" class="text-danger"></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-4">
+                                            <label for="discount_price" class="form-label">Discount Price</label>
+                                            <input type="text" class="form-control" name="discountPrice" id="discount_price" value="<%= proData.discountPrice %>">
+                                            <p id="discountPriceError" class="text-danger"></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-4">
+                                            <label for="stock_count" class="form-label">Count of Stock</label>
+                                            <input type="number" class="form-control" name="stock" id="stock_count" value="<%= proData.countInStock %>" required>
+                                            <p id="stockError" class="text-danger"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Category Section -->
+                                <div class="mb-4">
+                                    <% if(catData.length > 0) {
+                                        for(let i=0; i<catData.length; i++) { %>
+                                            <label class="mb-2 form-check form-check-inline" style="width: 45%;">
+                                                <input class="form-check-input" value="<%=catData[i]._id%>" name="category" id="category_<%= i %>" type="radio">
+                                                <span class="form-check-label"> <%=catData[i].name%> </span>
+                                            </label>
+                                    <%}}%>
+                                    <div id="categoryError" class="text-danger"></div> <!-- Placeholder for category error -->
+                                </div>
+                                <!-- Media Section for Images -->
+                                <div class="mb-4">
+                                    <label for="product_images" class="form-label">Images</label>
+                                    <input type="file" class="form-control" name="images" id="product_images" multiple>
+                                    <small class="form-text text-muted">You can select multiple images.</small>
+                                    <p id="imagesError" class="text-danger"></p> <!-- Placeholder for images error -->
+                                </div>
+                                <div class="mb-4">
+                                    <button type="submit" class="btn btn-primary">Update Product</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div> <!-- card end// -->
+                    <div class="card mb-4">
+                    </div> <!-- card end// -->
+                </div>
+            </div>
+        </section> <!-- content-main end// -->
+        <footer class="main-footer font-xs">
+            <div class="row pb-30 pt-15">
+                <div class="col-sm-6">
+                    <script>
+                    document.write(new Date().getFullYear())
+                    </script> ©, Evara - HTML Ecommerce Template .
+                </div>
+                <div class="col-sm-6">
+                    <div class="text-sm-end">
+                        All rights reserved
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </main>
+    <script src="admin-assets/js/vendors/jquery-3.6.0.min.js"></script>
+    <script src="admin-assets/js/vendors/bootstrap.bundle.min.js"></script>
+    <script src="admin-assets/js/vendors/select2.min.js"></script>
+    <script src="admin-assets/js/vendors/perfect-scrollbar.js"></script>
+    <script src="admin-assets/js/vendors/jquery.fullscreen.min.js"></script>
+    <!-- Main Script -->
+    <script src="admin-assets/js/main.js" type="text/javascript"></script>
+
+    <script>
+       document.addEventListener('DOMContentLoaded', function () {
+    const nameInput = document.getElementById('product_name');
+    const descriptionInput = document.getElementById('product_description');
+    const priceInput = document.getElementById('regular_price');
+    const discountPriceInput = document.getElementById('discount_price');
+    const stockInput = document.getElementById('stock_count');
+    const imagesInput = document.getElementById('product_images');
+
+    nameInput.addEventListener('blur', () => validateInput(nameInput, /^[A-Z][^\d\s]{0,98}$/, 'nameError', 'Product Name'));
+    descriptionInput.addEventListener('blur', () => validateInput(descriptionInput, /^\s*[A-Z][\s\S]{13,}$/, 'descriptionError', 'Description'));
+    priceInput.addEventListener('blur', () => validateInput(priceInput, /^\d+(\.\d{1,2})?$/, 'priceError', 'Price'));
+    discountPriceInput.addEventListener('blur', () => validateInput(discountPriceInput, /^\d+(\.\d{1,2})?$/, 'discountPriceError', 'Discount Price'));
+    stockInput.addEventListener('blur', () => validateInput(stockInput, /^(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-9]{2}|300)$/, 'stockError', 'Stock'));
+
+    imagesInput.addEventListener('change', function(e) {
+        validateImages(e, 'imagesError');
+    });
+
+    function validateInput(inputElement, pattern, errorId, errorMessage) {
+        const inputValue = inputElement.value.trim();
+        const errorElement = document.getElementById(errorId);
+
+        if (inputValue === '') {
+            errorElement.innerText = errorMessage + ' is required.';
+            return false;
+        } else if (!pattern.test(inputValue)) {
+            errorElement.innerText = 'Please enter a valid ' + errorMessage.toLowerCase() + '.';
+            return false;
+        } else {
+            errorElement.innerText = '';
+            return true;
+        }
+    }
+
+    function validateImages(e, errorId) {
+        var fileInput = e.target;
+        var maxFiles = 3;
+        var validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp']; 
+
+        if (fileInput.files.length > maxFiles) {
+            alert(`You can only upload a maximum of ${maxFiles} files.`);
+            fileInput.value = '';
+            document.getElementById(errorId).textContent = `You can only upload a maximum of ${maxFiles} files.`;
+            return; 
+        }
+
+        for (var i = 0; i < fileInput.files.length; i++) {
+            var file = fileInput.files[i];
+            var extension = file.name.split('.').pop().toLowerCase();
+            if (!validExtensions.includes(extension)) {
+                alert('Please upload only image files (jpg, jpeg, png, gif, webp).');
+                fileInput.value = '';
+                document.getElementById(errorId).textContent = 'Please upload only image files (jpg, jpeg, png, gif, webp).';
+                return; 
+            }
+        }
+
+        document.getElementById(errorId).textContent = '';
+    }
+
+    function validateCategory() {
+        const categoryInputs = document.querySelectorAll('input[name="category"]:checked');
+        const categoryError = document.getElementById('categoryError');
+
+        if (categoryInputs.length === 0) {
+            categoryError.innerText = 'Please select at least one category.';
+            return false;
+        } else {
+            categoryError.innerText = '';
+            return true;
+        }
+    }
+
+    function validateForm() {
+        const isValidName = validateInput('product_name', /^[A-Z][^\d\s]{0,98}$/, 'nameError', 'Product Name');
+        const isValidDescription = validateInput('product_description', /^\s*[A-Z][\s\S]{13,}$/, 'descriptionError', 'Description');
+        const isValidPrice = validateInput('regular_price', /^\d+(\.\d{1,2})?$/, 'priceError', 'Price');
+        const isValidDiscountPrice = validateInput('discount_price', /^\d+(\.\d{1,2})?$/, 'discountPriceError', 'Discount Price');
+        const isValidStock = validateInput('stock_count', /^(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-9]{2}|300)$/, 'stockError', 'Stock');
+        const isValidCategory = validateCategory(); // Validate category
+
+        if (!isValidName || !isValidDescription || !isValidPrice || !isValidDiscountPrice || !isValidStock || !isValidCategory) {
+            document.getElementById('mainError').innerText = 'Cannot submit form. Please fix errors.';
+            return false;
+        }
+        return true;
+    }
+});
+
+    </script>
+</body>
+
+</html>
