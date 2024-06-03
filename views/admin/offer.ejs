@@ -1,0 +1,298 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Admin Panel</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:title" content="">
+    <meta property="og:type" content="">
+    <meta property="og:url" content="">
+    <meta property="og:image" content="">
+    <link rel="shortcut icon" type="image/x-icon" href="/admin-assets/images/theme/favicon.svg">
+    <link href="/admin-assets/css/main.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="/admin-assets/css/vendor/font-awesome.min.css">
+    <link rel="stylesheet" href="/admin-assets/css/vendor/ionicons.css">
+    <link rel="stylesheet" href="/admin-assets/css/vendor/simple-line-icons.css">
+    <link rel="stylesheet" href="/admin-assets/css/vendor/jquery-ui.min.css">
+    <link rel="stylesheet" href="/admin-assets/css/vendor/normalize.css">
+    <link rel="stylesheet" href="/admin-assets/css/vendor/bootstrap.css">
+    <link rel="stylesheet" href="/admin-assets/css/vendor/material-icon-round.css">
+    <link rel="stylesheet" href="/admin-assets/css/plugins/swiper-bundle.min.css">
+    <link rel="stylesheet" href="/admin-assets/css/plugins/animate.min.css">
+    <link rel="stylesheet" href="/admin-assets/css/plugins/nice-select.css">
+    <link rel="stylesheet" href="/admin-assets/css/plugins/venobox.min.css">
+    <link rel="stylesheet" href="/admin-assets/css/plugins/jquery.lineProgressbar.css">
+    <link rel="stylesheet" href="/admin-assets/css/plugins/aos.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <div class="screen-overlay"></div>
+    <aside class="navbar-aside" id="offcanvas_aside">
+        <div class="aside-top">
+            <a href="index.html" class="brand-wrap">
+                <img src="admin-assets/imgs/Untitled.png" class="logo" alt="Evara Dashboard">
+            </a>
+            <div>
+                <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i> </button>
+            </div>
+        </div>
+        <nav>
+            <ul class="menu-aside">
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/userlist"> <!-- Placeholder link for Users -->
+                        <i class="icon material-icons md-person"></i>
+                        <span class="text">Users</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/product"> <!-- Placeholder link for Products -->
+                        <i class="icon material-icons md-shopping_bag"></i>
+                        <span class="text">Products</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/category"> <!-- Placeholder link for Categories -->
+                        <i class="icon material-icons md-category"></i>
+                        <span class="text">Categories</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/order"> <!-- Placeholder link for orders -->
+                        <i class="icon material-icons md-local_shipping"></i>
+                        <span class="text">Orders</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/couponlist"> <!-- Placeholder link for orders -->
+                        <i class="icon material-icons md-redeem coupon-icon"></i>
+                        <span class="text">Coupons</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/offer"> <!-- Placeholder link for orders -->
+                        <i class="icon material-icons md-local_shipping"></i>
+                        <span class="text">Offers</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/adminsales"> <!-- Placeholder link for orders -->
+                        <i class="icon material-icons md-local_shipping"></i>
+                        <span class="text">Sales Report</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+    
+
+    <main class="main-wrap">
+        <header class="main-header navbar">
+            <div class="col-nav ms-auto">
+                <button class="btn btn-icon btn-mobile me-auto" data-trigger="#offcanvas_aside"> <i class="material-icons md-apps"></i> </button>
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link btn-icon darkmode" href="#"> <i class="material-icons md-nights_stay"></i> </a>
+                    </li>
+                    <li class="dropdown nav-item">
+                        <a class="dropdown-item text-danger" href="/admin/logout"><i class="material-icons md-exit_to_app"></i>Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </header>
+        <section class="content-main">
+            <div class="card">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-bs-toggle="tab" href="#menu1">product offer</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#menu2">Category offer</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div id="menu1" class="container tab-pane active"><br>
+                        <h3>product offer</h3>
+                        <div class="row">
+                            <% if (typeof product !== 'undefined' && product.length > 0) {
+                                for (let i = 0; i < product.length; i++) { %>
+                                    <div class="col-xl-3 col-lg-4 col-md-6">
+                                        <div class="card card-product-grid">
+                                            <a href="#" class="img-wrap">
+                                                <img src="/uploads/productImages/<%= product[i].images[1] %>" alt="Product">
+                                            </a>
+                                            <div class="info-wrap">
+                                                <div class="dropdown float-end">
+                                                    <a href="/admin/editproduct?id=<%= product[i]._id %>" class="btn btn-sm btn-brand rounded">
+                                                        <i class="material-icons md-edit mr-5"></i>Edit
+                                                    </a>
+                                                </div>
+                                                <a href="#" class="title"><%= product[i].name %></a>
+                                                <div class="price mt-1">
+                                                    <%if(product[i].discountPrice>0){%>
+                                                    <del>RS.<%= product[i].price %>.00</del> RS.<%= product[i].price -product[i].discountPrice %>.00
+                                                    <%}else{%>
+                                                    RS.<%= product[i].price%>.00
+                                                    <%}%>
+                                                </div>
+                                                <div id="offer">
+                                                    <%if(product[i].discountPrice===0){%>
+                                                    <form id="productOfferForm<%= product[i]._id %>" action="/admin/productoffer" method="post" onsubmit="return validateForm('<%= product[i]._id %>')">
+                                                        <div class="form-group mt-2">
+                                                            <label for="offerInput<%= product[i]._id %>" class="form-label">Offer:</label>
+                                                            <input type="number" min="2" max="90" name="discount" class="form-control" id="offerInput<%= product[i]._id %>" placeholder="Enter offer discount" required>
+                                                            <div id="offerError<%= product[i]._id %>" class="error"></div>
+                                                        </div>
+                                                        <div class="form-group mt-2">
+                                                            <label for="dateInput<%= product[i]._id %>" class="form-label">Expired Date:</label>
+                                                            <input type="date" class="form-control" name="date" id="dateInput<%= product[i]._id %>" placeholder="Select date" min="<%= new Date().toISOString().split('T')[0]  %>" required>
+                                                            <div id="dateError<%= product[i]._id %>" class="error"></div>
+                                                            <input value="<%= product[i]._id %>" name="proId" type="hidden">
+                                                        </div>
+                                                        <button class="btn btn-sm btn-outline-primary mt-2" type="submit">submit</button>
+                                                    </form>
+                                                    <%}%>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% }
+                            } %>
+                        </div>
+                    </div>
+
+                    <div id="menu2" class="container tab-pane fade"><br>
+                        <h3>Category offer</h3>
+                        <div class="row">
+                            <% if (typeof categories !== 'undefined' && categories.length > 0) {
+                                for (let i = 0; i < categories.length; i++) { %>
+                                    <div class="col-xl-3 col-lg-4 col-md-6">
+                                        <div class="card card-product-grid">
+                                            <a href="#" class="img-wrap">
+                                                <img src="/uploads/categoryImages/<%= categories[i].image %>" alt="Category">
+                                            </a>
+                                            <div class="info-wrap">
+                                                <div class="dropdown float-end">
+                                                    <a href="/admin/edit-cate?id=<%= categories[i]._id %>" class="btn btn-sm btn-brand rounded">
+                                                        <i class="material-icons md-edit mr-5"></i>Edit
+                                                    </a>
+                                                </div>
+                                                <a href="#" class="title"><%= categories[i].name %></a>
+                                                <div class="price mt-1">
+                                                    <%if(categories[i].discount>0){%>
+                                                    <del><%= categories[i].discount %>%</del> <%= categories[i].discount %>%
+                                                    <%}else{%>
+                                                    <%= categories[i].discount%>%
+                                                    <%}%>
+                                                </div>
+                                                <div id="offer">
+                                                    <%if(categories[i].discount===0){%>
+                                                    <form id="categoryOfferForm<%= categories[i]._id %>" action="/admin/edit-cate" method="post" onsubmit="return validateCategoryForm('<%= categories[i]._id %>')">
+                                                        <div class="form-group mt-2">
+                                                            <label for="categoryOfferInput<%= categories[i]._id %>" class="form-label">Offer:</label>
+                                                            <input type="number" min="2" max="90" name="discount" class="form-control" id="categoryOfferInput<%= categories[i]._id %>" placeholder="Enter offer discount" required>
+                                                            <div id="categoryOfferError<%= categories[i]._id %>" class="error"></div>
+                                                        </div>
+                                                        <div class="form-group mt-2">
+                                                            <label for="categoryDateInput<%= categories[i]._id %>" class="form-label">Expired Date:</label>
+                                                            <input type="date" class="form-control" name="date" id="categoryDateInput<%= categories[i]._id %>" placeholder="Select date" min="<%= new Date().toISOString().split('T')[0]  %>" required>
+                                                            <div id="categoryDateError<%= categories[i]._id %>" class="error"></div>
+                                                            <input value="<%= categories[i]._id %>" name="catId" type="hidden">
+                                                        </div>
+                                                        <button class="btn btn-sm btn-outline-primary mt-2" type="submit">submit</button>
+                                                    </form>
+                                                    <%}%>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% }
+                            } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <footer class="main-footer text-center">
+            <p class="font-xs">
+                <script>
+                    document.write(new Date().getFullYear());
+                </script> &copy; Evara - HTML Ecommerce Template . All rights reserved
+            </p>
+            <p class="font-xs mb-30">Design by <a href="http://alithemes.com" target="_blank">Alithemes.com</a></p>
+        </footer>
+    </main>
+    <script src="/admin-assets/js/vendor/jquery-3.6.0.min.js"></script>
+    <script src="/admin-assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>
+    <script src="/admin-assets/js/vendor/bootstrap.bundle.min.js"></script>
+    <script src="/admin-assets/js/plugins/slick.js"></script>
+    <script src="/admin-assets/js/plugins/jquery.syotimer.min.js"></script>
+    <script src="/admin-assets/js/plugins/wow.js"></script>
+    <script src="/admin-assets/js/plugins/jquery-ui.js"></script>
+    <script src="/admin-assets/js/plugins/perfect-scrollbar.js"></script>
+    <script src="/admin-assets/js/plugins/magnific-popup.js"></script>
+    <script src="/admin-assets/js/plugins/select2.min.js"></script>
+    <script src="/admin-assets/js/plugins/waypoints.js"></script>
+    <script src="/admin-assets/js/plugins/counterup.js"></script>
+    <script src="/admin-assets/js/plugins/jquery.countdown.min.js"></script>
+    <script src="/admin-ssets/js/plugins/images-loaded.js"></script>
+    <script src="/admin-assets/js/plugins/isotope.js"></script>
+    <script src="/admin-assets/js/plugins/scrollup.js"></script>
+    <script src="/admin-assets/js/plugins/jquery.vticker-min.js"></script>
+    <script src="/admin-assets/js/plugins/jquery.theia.sticky.js"></script>
+    <script src="/admin-assets/js/plugins/jquery.elevatezoom.js"></script>
+    <script src="/admin-assets/js/main.js?v=3.3"></script>
+    <script src="/admin-assets/js/shop.js?v=3.3"></script>
+    <script>
+        function validateForm(productId) {
+            const offerInput = document.getElementById('offerInput' + productId);
+            const dateInput = document.getElementById('dateInput' + productId);
+            const offerError = document.getElementById('offerError' + productId);
+            const dateError = document.getElementById('dateError' + productId);
+
+            let isValid = true;
+            if (offerInput.value < 2 || offerInput.value > 90) {
+                offerError.innerHTML = 'Please enter a valid discount between 2% and 90%.';
+                isValid = false;
+            } else {
+                offerError.innerHTML = '';
+            }
+
+            if (!dateInput.value) {
+                dateError.innerHTML = 'Please select a valid expiration date.';
+                isValid = false;
+            } else {
+                dateError.innerHTML = '';
+            }
+
+            return isValid;
+        }
+
+        function validateCategoryForm(categoryId) {
+            const categoryOfferInput = document.getElementById('categoryOfferInput' + categoryId);
+            const categoryDateInput = document.getElementById('categoryDateInput' + categoryId);
+            const categoryOfferError = document.getElementById('categoryOfferError' + categoryId);
+            const categoryDateError = document.getElementById('categoryDateError' + categoryId);
+
+            let isValid = true;
+            if (categoryOfferInput.value < 2 || categoryOfferInput.value > 90) {
+                categoryOfferError.innerHTML = 'Please enter a valid discount between 2% and 90%.';
+                isValid = false;
+            } else {
+                categoryOfferError.innerHTML = '';
+            }
+
+            if (!categoryDateInput.value) {
+                categoryDateError.innerHTML = 'Please select a valid expiration date.';
+                isValid = false;
+            } else {
+                categoryDateError.innerHTML = '';
+            }
+
+            return isValid;
+        }
+    </script>
+</body>
+</html>

@@ -643,6 +643,9 @@
             <div class="col-lg-6 col-md-6" style="margin-left:380px ;">
                 <div class="account_form" data-aos="fade-up" data-aos-delay="0">
                     <h3>OTP Verification</h3>
+                    <%if(message){%>
+                        <p class="text-danger"><%=message%></p>
+                        <%}%>
                     <form action="" method="POST">
                         <div class="default-form-box">
                             <label>Enter OTP <span>*</span></label>

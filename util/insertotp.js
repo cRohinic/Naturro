@@ -1,42 +1,36 @@
 const nodemailer = require("nodemailer");
 const config = require("../config/config");
 
-
-//create a transport object using SMTP transport
-
 const transporter = nodemailer.createTransport({
-    host:'smtp.gmail.com',
-    port:587,
-    secure:false,
-    requireTLS:true,
-    auth:{
-         user:config.emailUser,
-         pass:config.emailPassword,
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
+    requireTLS: true,
+    auth: {
+         user: config.emailUser,
+         pass: config.emailPassword,
     }
 });
 
-
-//sent otp to mail for forget Password
-
-const sendInsertOtp = async(email, otp) => {
-
+// Send OTP to mail for forgot password
+const sendInsertOtp = async (email, otp) => {
+    console.log(otp);
     const mailOptions = {
-        from:'"natuuro" <rohinic699@gmail.com>',
-        to:email,
-        subject: 'your one time password ,natuuro',
-        text:`hi,Your OTP is ${otp}`
+        from: '"Natuuro" <rohinic699@gmail.com>',
+        to: email,
+        subject: 'Your One Time Password - Natuuro',
+        text: `Hi, your OTP is ${otp}`
     };
-    try{
-        
+    try {
         const info = await transporter.sendMail(mailOptions);
-        console.log("Email send Successfull:",info.response);
-        console.log(otp);
+        console.log("Email sent successfully:", info.response);
         return otp;
-    }catch(error){
-        console.error('Error sending OTP email:',error);
-        throw new Error('Failed to send otp');
+    } catch (error) {
+        console.error('Error sending OTP email:', error);
+        throw new Error('Failed to send OTP');
     }
-
 };
+
 module.exports = { sendInsertOtp };
+
 

@@ -2,7 +2,7 @@ const sessionSecret = "mysitesessionsecret";
 
 
 const emailUser = "rohinic699@gmail.com";
-const emailPassword = "jdxb pwzy psgj bhng";
+const emailPassword = "cweg auff ihce tbct";
 
 
 

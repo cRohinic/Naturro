@@ -31,6 +31,8 @@ const addProduct = async(req,res)=>{
 
         const savedProduct = await product.save();
         
+        
+        
         const categoryDetails = await categoryModel.find();
         if(savedProduct){
             res.redirect('/admin/product');
@@ -74,14 +76,12 @@ const addProduct = async(req,res)=>{
     const loadEdit =  async(req,res)=>{
         try{
             const id = req.query.id;
-
-
-            const proData = await productModel.findById(id);
+            const  proData = await productModel.findById(id);
 
 
             const cateData =  await categoryModel.find({});
 
-            res.render("editProduct",{cateData,proData});
+            res.render("editProduct",{cateData, proData});
         }catch(error){
             console.log(error.message);
             res.status(500).send('Internal Server is Error');
@@ -89,7 +89,31 @@ const addProduct = async(req,res)=>{
     };
 
 
-
+    const deleteimage = async (req, res) => {
+        try {
+            const id = req.query.id;
+            const del = req.query.delete;
+    
+            const product = await productModel.findById(id);
+            console.log(product, del, id);
+    
+            if (del) {
+                const index = product.images.indexOf(del);
+                if (index !== -1) {
+                    product.images.splice(index, 1);
+                    // Save the updated product to the database
+                    await product.save();
+                }
+            }
+    
+            res.redirect('/admin/editproduct?id=' + id);
+        } catch (err) {
+            console.log(err.message);
+            // Handle errors appropriately, perhaps send an error response
+            res.status(500).send("Error deleting image");
+        }
+    }
+    
 const editProduct = async(req,res)=>{
     try{
         let existingImages = [];
@@ -100,17 +124,19 @@ const editProduct = async(req,res)=>{
             existingImages = existingProduct.images;
         }
 
-        console.log('..........',req.body);
+        // console.log('..........',req.body);
         let newImages = [];
         if(req.files && req.files.length){
             newImages = req.files.map(file => file.filename);
         }
+        // console.log(newImages,"newi");
 
         const allImages = existingImages.concat(newImages);
+        // console.log(allImages,"all images");
 
 
-        if(allImages.length > 3){
-            return res.render('editProduct',{cate: categorydetails,pro:existingProduct, message:'maximun 3 inmages per product'});
+        if(allImages.length > 5){
+            return res.render('editProduct',{cateData: categorydetails, proData:existingProduct, message:'maximun 3 inmages per product'});
 
         }else{
             const updateProduct = await productModel.findByIdAndUpdate(req.query.id,{
@@ -118,7 +144,7 @@ const editProduct = async(req,res)=>{
                     name:req.body.name,
                     description: req.body.description,
                     images:allImages,
-                    caategory:req.body.category,
+                    category:req.body.category,
                     price:req.body.price,
                     descountPrice:req.body.discountPrice,
                     countInStock:req.body.stock,
@@ -133,6 +159,8 @@ const editProduct = async(req,res)=>{
         res.status(500).send('An error ocurred');
     }
 };
+
+
 
 
 
@@ -164,23 +192,114 @@ const loadIndividualProduct = async (req, res) => {
     }
 }
 
-
-
-
-const deleteProduct = async (req, res) => {
+const updatepro = async (req, res) => {
     try {
-        console.log("deleted");
-        const id = req.query.id;
-        console.log(req.query.id);
-        await product.findByIdAndUpdate(id, { is_active: false });
-        res.redirect('/admin/products/Edit');
+
+        let existingImages = [];
+        const existingProduct = await productModel.findById(req.query.id);
+        const categorydetails = await categoryModel.find({});
+
+        if (existingProduct && existingProduct.images && Array.isArray(existingProduct.images) ) {
+            existingImages = existingProduct.images;
+        }
+
+        let newImages = [];
+        if (req.files && Array.isArray(req.files)) {
+            newImages = req.files.map(file => file.filename);
+        }
+
+
+        const allImages = existingImages.concat(newImages);
+        if(allImages.length>3){
+            res.render('admin-product-edit', { cateData: categorydetails,  proData: existingProduct, message: 'maximum 3 images per product' });
+        }else{
+            
+            const category=await categoryModel.findById(req.body.category) || null;
+        
+            if(category !==null && typeof category.offerTime!=='undefined'  )
+            {
+               
+                await productModel.findByIdAndUpdate(req.query.id, {
+                    $set: {
+                        name: req.body.name,
+                        description: req.body.description,
+                        images: allImages,
+                        brand: req.body.brand,
+                        category: req.body.category,
+                        price: req.body.price,
+                        countInStock:req.body.stock,
+                        offerTime:category.offerTime,
+                        discountPrice:category.discountPrice
+        
+                    }});
+       }else{
+        await productModel.findByIdAndUpdate(req.query.id, {
+            $set: {
+                name: req.body.name,
+                description: req.body.description,
+                images: allImages,
+                brand: req.body.brand,
+                category: req.body.category,
+                price: req.body.price,
+                countInStock: req.body.stock
+            },
+            $unset: {
+                offerTime: "",
+                discountPrice: ""
+            }
+        });
+        
+            
+    }
+        
+    res.redirect('/admin/productlist');
+
+
+    }}
+             catch (error) {
+              console.log('update product:', error.message);
+   }
+};
+
+const showsearch = async (req, res) => {
+    try {
+        const search = req.query.text;
+        const categoryQuery = req.query.category;
+        let products = [];
+
+        if (categoryQuery) {
+            const category = await categoryModel.findOne({ name: categoryQuery });
+
+            if (category) {
+                products = await productModel.find({
+                    category: category._id,
+                    list: true,
+                    $or: [
+                        { name: { $regex: search, $options: 'i' } },
+                        { brand: { $regex: search, $options: 'i' } }
+                    ]
+                }).populate('category');
+            } else {
+                return res.status(404).json({ error: 'Category not found' });
+            }
+        } else {
+            products = await productModel.find({
+                is_deleted: false,
+                $or: [
+                    { name: { $regex: search, $options: 'i' } },
+                    { brand: { $regex: search, $options: 'i' } }
+                ]
+            }).populate('category');
+        }
+
+        res.status(200).json({ products: products });
     } catch (error) {
-        console.log(error.message);
+        console.error('Error searching for products:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 };
 
 
-  
 
 
 
@@ -192,5 +311,7 @@ module.exports = {
     loadEdit,
     editProduct,
     loadIndividualProduct,
-    deleteProduct
+    updatepro,
+    deleteimage,
+    showsearch
 }

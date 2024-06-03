@@ -76,6 +76,7 @@ const editCategoryLoad = async (req, res) => {
 
 
 const updateCate = async(req,res)=>{
+
     try{
         console.log(req.query.id,req.body.name,req.body.description);
         await categoryModel.findByIdAndUpdate({_id:req.query.id},{$set:{name:req.body.name,description:req.body.description}});
@@ -105,12 +106,6 @@ const deleteCate = async(req,res)=>{
         console.log(error.message);
     }
 };
-
-
-
-
-
-
 
 
 

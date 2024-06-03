@@ -22,6 +22,12 @@ const categorySchema = new mongoose.Schema({
     is_active:{
         type:Boolean,
         default:true
+    },
+    offerTime:{
+        type: Date
+    },
+    discountPrice:{
+        type:Number
     }
 });
 

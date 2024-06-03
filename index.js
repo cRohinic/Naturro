@@ -1,35 +1,38 @@
 const mongoose = require("mongoose");
-
+const express = require("express");
 const session = require("express-session");
 const noCache = require("nocache");
-mongoose.connect("mongodb://127.0.0.1:27017/Natuuro");
-const path=require('path')
+const path = require("path");
 
+// MongoDB connection
+mongoose.connect("mongodb://127.0.0.1:27017/Natuuro", { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("MongoDB connected successfully"))
+  .catch((err) => console.error("MongoDB connection error:", err));
 
-const express = require("express");
+// Express app setup
 const app = express();
+app.use(noCache());
 
-//session middleware setup
-
+// Session middleware setup
 app.use(session({
-    secret:'gshsgschhdscgdscjhscdhjgdschg',
-    resave:false,
-    saveUninitialized:false
+  secret: 'gshsgschhdscgdscjhscdhjgdschg',
+  resave: false,
+  saveUninitialized: false
 }));
 
+// Static file serving
+app.use('/', express.static(path.join(__dirname, 'public')));
+app.use('/admin', express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-//for user routes
-
+// Routes
 const userRoute = require('./routes/userRoutes');
 const adminRoute = require('./routes/adminRoute');
-app.use('/',userRoute);
-app.use('/admin',adminRoute);
-app.use(noCache());
-app.use('/',express.static(path.join(__dirname,'public')))
-app.use("/admin", express.static(path.join(__dirname, "public")));
-app.use('/uploads',express.static(path.join(__dirname, 'uploads')))
+app.use('/', userRoute);
+app.use('/admin', adminRoute);
 
-
-app.listen(3040,function(){
-    console.log("server is running...http://localhost:3040/");
-})
+// Start the server
+const PORT = 3040;
+app.listen(PORT, () => {
+  console.log(`Server is running...http://localhost:${PORT}/`);
+});
