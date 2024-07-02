@@ -33,16 +33,14 @@ const loadAndShowCart = async (req, res) => {
 
 const addTocart = async (req, res) => {
     try {
-        
         const productId = req.body.productId;
-
         const product = await productModel.findById(productId);
-        console.log(product);
+
         if (!product) {
-            console.log('Product is not found');
+            console.log('Product not found');
             return res.status(404).json({ message: 'Product not found' });
         }
-console.log(req.session.user);
+
         let userCart = await cartModel.findOne({ owner: req.session.user });
         if (!userCart) {
             userCart = new cartModel({
@@ -51,37 +49,40 @@ console.log(req.session.user);
                 billTotal: 0,
             });
         }
-        
-        const existingCartItem = userCart.items.find(item => item.productId._id.toString() === productId);
+
+        const existingCartItem = userCart.items.find(item => item.productId.toString() === productId);
 
         if (existingCartItem) {
             if (existingCartItem.quantity < product.countInStock && existingCartItem.quantity < 5) {
                 existingCartItem.quantity += 1;
-                existingCartItem.price = existingCartItem.quantity * product.discountPrice;
-                console.log(existingCartItem.price);
+                existingCartItem.price = existingCartItem.quantity * (product.price - product.discountPrice);
             } else if (existingCartItem.quantity + 1 > product.countInStock) {
-                return res.status(409).json({ message: 'Stock Limit Exceeded' });
+                return res.status(409).json({ message: 'Stock Limit Exceeded', alertType: 'stockMax' });
             } else {
-                return res.status(400).json({ message: 'Maximum quantity per person reached' });
+                return res.status(400).json({ message: 'Maximum quantity per person reached', alertType: 'maxQuantity' });
             }
         } else {
+            if (product.countInStock < 1) {
+                return res.status(409).json({ message: 'Stock Limit Minimum', alertType: 'stockMin' });
+            }
             userCart.items.push({
                 productId: productId,
                 quantity: 1,
-                price: product.discountPrice,
+                price: product.price - product.discountPrice,
             });
         }
 
         userCart.billTotal = userCart.items.reduce((total, item) => total + item.price, 0);
 
-        const me= await userCart.save();
-        console.log(me,"deatilka");
-        return res.status(200).json({ message: 'add to cart' });
+        await userCart.save();
+        return res.status(200).json({ message: 'Added to cart', alertType: 'success' });
     } catch (err) {
         console.log('Error adding to cart:', err.message);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };
+
+
 
 
 const updatequantity=async(req,res)=>{
@@ -115,8 +116,8 @@ const updatequantity=async(req,res)=>{
             return res.status(404).json({ success: false, message: "Invalid operation" });
         }
 
-        cartItem.price = cartItem.quantity * cartItem.productId.price;
-        cart.billTotal = cart.items.reduce((total, item) => total + (item.quantity * item.productId.price), 0);
+        cartItem.price = cartItem.quantity * (cartItem.productId.price-cartItem.productId.discountPrice);
+        cart.billTotal = cart.items.reduce((total, item) => total + (item.quantity * (item.productId.price-item.productId.discountPrice)), 0);
 
         await cart.save();
         return res.status(200).json({ success: true, cart });

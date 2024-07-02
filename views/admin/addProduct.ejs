@@ -15,6 +15,11 @@
     <link rel="shortcut icon" type="image/x-icon" href="admin-assets/imgs/theme/favicon.svg">
     <!-- Template CSS -->
     <link href="admin-assets/css/main.css" rel="stylesheet" type="text/css" />
+  <!-- cropper js -->
+   <!-- <link href="cropperjs/cropper.css" rel="stylsheet">
+   <script src="cropperjs/cropper.js"></script> -->
+
+   <link href="style.css" rel="stylesheet">
 </head>
 
 <body>
@@ -29,6 +34,12 @@
             </div>
         </div>
         <nav>
+            <li class="menu-item active ">
+                <a class="menu-link" href="/admin/home"> <i class="icon material-icons md-home"></i>
+                    <span class="text">Dashboard</span>
+                </a>
+            </li>
+            
             <ul class="menu-aside">
                 <li class="menu-item">
                     <a class="menu-link" href="/admin/userlist"> <!-- Placeholder link for Users -->
@@ -56,24 +67,28 @@
                 </li>
                 <li class="menu-item">
                     <a class="menu-link" href="/admin/couponlist"> <!-- Placeholder link for orders -->
-                        <i class="icon material-icons md-redeem coupon-icon"></i>
+                        <i class="icon material-icons md-shopping_bag"></i>
                         <span class="text">Coupons</span>
                     </a>
                 </li>
                 <li class="menu-item">
                     <a class="menu-link" href="/admin/offer"> <!-- Placeholder link for orders -->
-                        <i class="icon material-icons md-local_shipping"></i>
+                        <i class="icon material-icons md-shopping_bag"></i>
                         <span class="text">Offers</span>
                     </a>
                 </li>
                 <li class="menu-item">
                     <a class="menu-link" href="/admin/adminsales"> <!-- Placeholder link for orders -->
-                        <i class="icon material-icons md-local_shipping"></i>
+                        <i class="icon material-icons md-store"></i>
                         <span class="text">Sales Report</span>
                     </a>
+                   
                 </li>
             </ul>
         </nav>
+
+
+        
     </aside>
 
     
@@ -202,6 +217,11 @@
                                     <div id="selectedImagesContainer"></div>
                                     <input type="file" class="form-control" name="images" id="product_images" multiple onchange="displaySelectedImages(this)">
                                    
+                                     <!-- <button id="btn-crop">Crop Image</button>
+                                     <div class="cropped-container">
+                                        <img src="" id="output">
+                                     </div> -->
+
                                     <small class="form-text text-muted">You can select multiple images.</small>
                                     <p id="imagesError" class="text-danger"></p> <!-- Placeholder for images error -->
                                 </div>
@@ -265,6 +285,62 @@
                     
                 </div>
             </div>
+
+
+
+
+                <!-- Start Pagination -->
+                <div class="page-pagination text-center" data-aos="fade-up" data-aos-delay="6">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            <li class="page-item active" aria-current="page">
+                                <a class="page-link" href="product?page=1">1</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="product?page=2">2</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="product?page=3">3</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="product?page=4">4</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="product?page=5">5</a>
+                            </li>
+                        
+                                                      <li class="page-item">
+                                <a class="page-link" href="product?page=10">6<i class="ion-ios-skipforward"></i></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         </section> <!-- content-main end// -->
         <footer class="main-footer font-xs">
             <div class="row pb-30 pt-15">

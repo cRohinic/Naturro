@@ -198,8 +198,14 @@ let resendOtp = async (req, res) => {
 
 const loaduserProfile = async(req,res)=>{
 try{
+    let product=await  orderModel.find({list:true})
+    const perPage=8;
+        const page = parseInt(req.query.page) || 1;
+        const totalproducts= await orderModel.countDocuments({});
+        const totalPage=Math.ceil(totalproducts / perPage);
        let address =await addressModel.findOne({user: req.session.user}) || null;
-       let orders = await orderModel.find({ user: req.session.user}) || [];
+       let orders = await orderModel.find({ user: req.session.user}).skip(perPage * (page-1)).limit(perPage).sort({_id:-1})
+       || [];
        const user = await User.findById(req.session.user);
         let wallet = await walletModel.findOne({user:req.session.user}) || null;
        
@@ -483,7 +489,11 @@ const deleteAddress = async (req, res) => {
 
 const loadShop = async (req, res) => {
     try {
-        // Default sort option
+        let product=await  ProductModel.find({list:true})
+        const perPage=8;
+            const page = parseInt(req.query.page) || 1;
+            const totalproducts= await ProductModel.countDocuments({});
+            const totalPage=Math.ceil(totalproducts / perPage);
         let sortOption = {};
 
         // Determine the sort option based on query parameter
@@ -513,7 +523,6 @@ const loadShop = async (req, res) => {
 
         console.log(sortOption);
 
-        // Build the initial query
         let query = { is_deleted: false };
 
         // Add search filter to the query if present
@@ -525,7 +534,7 @@ const loadShop = async (req, res) => {
             ];
         }
 
-        // Add category filter to the query if present
+        // Add category filter 
         if (req.query.category) {
             const category = await categoryModel.findOne({ name: req.query.category });
             if (category) {
@@ -534,7 +543,8 @@ const loadShop = async (req, res) => {
         }
 
         // Fetch the products based on the query and sort options
-        let products = await ProductModel.find(query).sort(sortOption).populate('category');
+        let products = await ProductModel.find(query).sort(sortOption).populate('category').skip(perPage * (page - 1))
+                .limit(perPage).sort({_id:-1});
         if (!products) {
             products = [];
         }
@@ -556,6 +566,43 @@ const loadShop = async (req, res) => {
 
 
 
+// const cancelorder = async (req, res) => {
+//     try {
+//         const { reason, oId } = req.body;
+
+//         if (!reason || !oId) {
+//             return res.status(400).json({ success: false, error: "Reason and orderId are required" });
+//         }
+
+//         const order = await orderModel.findOne({oId: oId });
+        
+
+//         if (!order) {
+//             return res.status(404).json({ success: false, error: "Order not found" });
+//         }
+
+//         // Add cancellation request to the order
+//         const newCancelRequest = {
+//             type: 'Cancel',
+//             status: 'Pending',
+//             reason:' reason'
+//         };
+
+//         order.requests.push(newCancelRequest);
+//         await order.save();
+
+//         // Update order status to "Cancelled"
+//         order.status = 'Canceled';
+//         await order.save();
+           
+//         res.json({ success: true, message: "Order cancelled successfully", order });
+//     } catch (error) {
+//         console.error("cancelOrder error:", error);
+//         return res.status(500).json({ success: false, error: "Internal server error" });
+//     }
+// }
+
+
 const cancelorder = async (req, res) => {
     try {
         const { reason, oId } = req.body;
@@ -564,8 +611,7 @@ const cancelorder = async (req, res) => {
             return res.status(400).json({ success: false, error: "Reason and orderId are required" });
         }
 
-        const order = await orderModel.findOne({oId: oId });
-        
+        const order = await orderModel.findOne({ oId: oId });
 
         if (!order) {
             return res.status(404).json({ success: false, error: "Order not found" });
@@ -575,22 +621,53 @@ const cancelorder = async (req, res) => {
         const newCancelRequest = {
             type: 'Cancel',
             status: 'Pending',
-            reason:' reason'
+            reason: reason
         };
 
         order.requests.push(newCancelRequest);
-        await order.save();
 
         // Update order status to "Cancelled"
         order.status = 'Canceled';
         await order.save();
-           
+
+        // Update stock quantities for each product in the canceled order
+        for (const item of order.items) {
+            const product = await productModel.findById(item.productId);
+            if (product) {
+                product.stock += item.quantity;
+                await product.save();
+            }
+        }
+
         res.json({ success: true, message: "Order cancelled successfully", order });
     } catch (error) {
         console.error("cancelOrder error:", error);
         return res.status(500).json({ success: false, error: "Internal server error" });
     }
-}
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 const loadForgotPassword  = async(req,res)=>{
     try{
@@ -898,7 +975,34 @@ const newArrivals=async(req,res)=>{
         }
       };
       
-
+ const googleSignUp = async(req,res)=>{
+    console.log('googlesignUp  open');
+    try{
+        console.log('ghfgf');
+const email = req.user.email;
+console.log(email);
+let userData;
+userData = await User.findOne({email:email});
+if(!userData){
+    const user = new User({
+        name: req.user.name,
+        email: req.user.email,
+        mobile: "123456789",
+        is_admin: 0,
+        is_verified: 1,
+        is_blocked: false
+    })
+    userData = await user.save();
+    req.session.email = req.user.email;
+    req.session.user = userData._id;
+    req.session.save();
+    console.log(userData,"googledata");
+    res.redirect('/home')
+}
+    }catch(error){
+        console.log('error');
+    }
+ }
 
 
 
@@ -930,7 +1034,6 @@ module.exports = {
     addToWallet,
     returnOrder ,
     newArrivals,
-    invoice
-
-    
+    invoice,
+    googleSignUp
 }

@@ -28,8 +28,43 @@ const loadcreatecoupon = async(req,res)=>{
 
 
 
+// const createCoupon = async (req, res) => {
+//     console.log("calling create coupon")
+//     try {
+//         const {
+//             code,
+//             description,
+//             discountPercentage,
+//             minPurchaseAmount,
+//             maxPurchaseAmount,
+//             expirationDate,
+//             maxUsers
+//         } = req.body;
+//         console.log(req.body,'coupon from body');
+//         const newCoupon = new couponModel({
+//             code,
+//             description,
+//             minimumAmount: minPurchaseAmount,
+//             maximumAmount: maxPurchaseAmount,
+//             discountPercentage:discountPercentage,
+//             expirationDate: new Date(expirationDate),
+//             maxUsers
+//         });
+
+//         await newCoupon.save();
+//         console.log(await newCoupon.save(),"coupon saved");
+
+//         res.status(200).json({ success: true, message: "Coupon created successfully." });
+//         }catch (error) {
+//             console.error("Error creating coupon:", error.message);
+//             res.status(500).json({ success: false});
+//         }
+        
+// };
+
+
 const createCoupon = async (req, res) => {
-    console.log("calling create coupon")
+    console.log("calling create coupon");
     try {
         const {
             code,
@@ -40,27 +75,36 @@ const createCoupon = async (req, res) => {
             expirationDate,
             maxUsers
         } = req.body;
-        console.log(req.body,'coupon from body');
+        
+        console.log(req.body, 'coupon from body');
+
+        // Validate expirationDate
+        const parsedExpirationDate = new Date(expirationDate);
+        if (isNaN(parsedExpirationDate.getTime())) {
+            return res.status(400).json({ success: false, message: "Invalid expiration date." });
+        }
+
         const newCoupon = new couponModel({
             code,
             description,
             minimumAmount: minPurchaseAmount,
             maximumAmount: maxPurchaseAmount,
-            discountPercentage:discountPercentage,
-            expirationDate: new Date(expirationDate),
+            discountPercentage,
+            expirationDate: parsedExpirationDate,
             maxUsers
         });
 
         await newCoupon.save();
-        console.log(await newCoupon.save(),"coupon saved");
+        console.log("coupon saved", newCoupon);
 
         res.status(200).json({ success: true, message: "Coupon created successfully." });
-        }catch (error) {
-            console.error("Error creating coupon:", error.message);
-            res.status(500).json({ success: false});
-        }
-        
+    } catch (error) {
+        console.error("Error creating coupon:", error.message);
+        res.status(500).json({ success: false, message: "Failed to create coupon." });
+    }
 };
+
+
 
 
 const toggleCouponStatus = async (req, res) => {

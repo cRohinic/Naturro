@@ -5,6 +5,8 @@ const categoryModel = require("../models/categoryModel");
 const orderModel = require("../models/orderModel")
 const productModel=require('../models/productModel');
 const walletModel= require('../models/walletModel');
+const userModel = require("../models/userModel");
+const ProductModel = require("../models/productModel");
 
 
 
@@ -47,18 +49,407 @@ const verifyAdmin = async (req, res) => {
     }
 }
 
-
-const loadDashboard = async (req,res)=>{
-    try{
+async function salesReport(date){
+  try{
+      const currentDate = new Date();
+      let orders = [];
+      for (let i = 0; i < date; i++) {
+          const startDate = new Date(currentDate);
+          startDate.setDate(currentDate.getDate() - i);
+          startDate.setHours(0, 0, 0, 0);
+          const endDate = new Date(currentDate);
+          endDate.setDate(currentDate.getDate() - i);
+          endDate.setHours(23, 59, 59, 999);  
+      
+          const dailyOrders = await orderModel.find({
+            status: "Delivered",
+            orderDate: {
+              $gte: startDate,
+              $lt: endDate,
+            },
+          });
+          
+      
+          orders = [...orders, ...dailyOrders];
+        }
+  
+        let productEntered = [];
+        for (let i = 0; i < date; i++) {
+            const startDate = new Date(currentDate);
+            startDate.setDate(currentDate.getDate() - i);
+            startDate.setHours(0, 0, 0, 0);
+            const endDate = new Date(currentDate);
+            endDate.setDate(currentDate.getDate() - i);
+            endDate.setHours(23, 59, 59, 999);  
         
-        res.render('adminhome');
+            const product = await productModel.find({
+              createdAt: {
+                $gte: startDate,
+                $lt: endDate,
+              },
+            });
+            
+        
+            productEntered= [...productEntered, ...product];
+          }
+        let users = await userModel.countDocuments();
+       
+  
+        let totalRevenue = 0;
+        orders.forEach((order) => {
+          totalRevenue += order.billTotal;
+        });
+      
+        let totalOrderCount = await orderModel.find({
+          status: "Delivered",
+        });
+      
+        let Revenue = 0;
+        totalOrderCount.forEach((order) => {
+          Revenue += order.billTotal;
+        });
+      
+        let stock = await productModel.find();
+        let totalCountInStock = 0;
+        stock.forEach((product) => {
+          totalCountInStock += product.countInStock;
+        });
+      
+        let averageSales = orders.length / date; 
+        let averageRevenue = totalRevenue / date; 
+   
+       
+        return {
+          users,
+          totalOrders: orders.length,
+          totalRevenue,
+          totalOrderCount: totalOrderCount.length,
+          totalCountInStock,
+          averageSales,
+          averageRevenue,
+          Revenue,
+          productEntered:productEntered.length,
+         
+          totalOrder:orders
+        };
+  }
+  catch(err){
+  console.log('salesreport',err.message);
+  }
+  }
+  async function orderPieChart() {
+    const statuses = ["Pending", "Processing", "Shipped", "Delivered", "Canceled", "Returned"];
+    const counts = await Promise.all(statuses.map(status => orderModel.countDocuments({ status })));
 
-    }
-    catch(error){
-        console.log('load home',error.message);
-    }
+    
+
+    const [Pending, Processing, Shipped, Delivered, Canceled, Returned] = counts;
+
+    return { Pending, Processing, Shipped, Delivered, Canceled, Returned };
 }
+  async function salesReportmw(startDate, endDate) {
+      try {
+          let orders = await orderModel.find({
+              status: "Delivered",
+              orderDate: {
+                  $gte: startDate,
+                  $lte: endDate,
+              },
+          });
+  
+          let productEntered = await productModel.find({
+              createdAt: {
+                  $gte: startDate,
+                  $lte: endDate,
+              },
+          });
+  
+          let usersCount = await userModel.countDocuments();
+  
+          let totalRevenue = orders.reduce((total, order) => total + order.billTotal, 0);
+  
+          let totalOrderCount = orders.length;
+  
+          let stock = await productModel.find(); 
+          let totalCountInStock = stock.reduce((total, product) => total + product.countInStock, 0);
+  
+          let daysInRange = (endDate - startDate) / (1000 * 60 * 60 * 24);
+          let averageSales = totalOrderCount / daysInRange; 
+          let averageRevenue = totalRevenue / daysInRange; 
+  
+          return {
+              usersCount,
+              totalOrders: totalOrderCount,
+              totalRevenue,
+              totalCountInStock,
+              averageSales,
+              averageRevenue,
+              productEntered: productEntered.length,
+              totalOrder: orders 
+          };
+      } catch (err) {
+          console.error('salesReport error', err.message);
+          throw err; 
+      }
+  }
 
+
+const loadDashboard = async (req, res) => {
+  try {
+    let daily = await salesReport(1);
+    let weekly = await salesReport(7);
+    let monthly = await salesReport(30);
+    let yearly = await salesReport(365);
+    let allProductsCount = await productModel.countDocuments();
+    let orders=await orderModel.find().populate('user').limit(5);
+
+    const topSellingProducts = await orderModel.aggregate([
+      { $match: { status: "Delivered" } },
+      { $unwind: "$items" },
+      {
+        $group: {
+          _id: "$items.productId",
+          totalQuantity: { $sum: "$items.quantity" },
+        },
+      },
+      { $sort: { totalQuantity: -1 } },
+      { $limit: 6 },
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+      { $unwind: "$productDetails" },
+      {
+        $project: {
+          _id: "$productDetails._id",
+          pname: "$productDetails.pname",
+          totalQuantity: 1,
+          images: "$productDetails.images",
+          brand: "$productDetails.brand"
+        },
+      },
+    ]);
+    
+    
+    //////////////////************************** Top Selling Categories  ***************************//////////////////
+    
+    
+    const topSellingCategories = await orderModel.aggregate([
+      { $match: { status: "Delivered" } },
+      { $unwind: "$items" },
+      {
+        $lookup: {
+          from: "products",
+          localField: "items.productId",
+          foreignField: "_id",
+          as: "product",
+        },
+      },
+      { $unwind: "$product" },
+      {
+        $group: {
+          _id: "$product.category",
+          totalSales: { $sum: "$items.quantity" },
+        },
+      },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "_id",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+      { $unwind: "$category" },
+      {
+        $project: {
+          name: "$category.name",
+          totalSales: 1,
+        },
+      },
+      { $sort: { totalSales: -1 } },
+      { $limit: 5 },
+    ]);
+    
+    let orderChart=await orderPieChart();
+    
+    res.render('adminhome',{daily,weekly,monthly,yearly,allProductsCount,orders,orderChart,topSellingCategories,topSellingProducts});
+} catch (error) {
+    console.error(error);
+ 
+}
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Helper Functions
+
+const getTopSellingProducts = async () => {
+  return await orderModel.aggregate([
+    { $match: { status: "Delivered" } },
+    { $unwind: "$items" },
+    { $group: { _id: "$items.productId", totalQuantity: { $sum: "$items.quantity" } } },
+    { $sort: { totalQuantity: -1 } },
+    { $limit: 6 },
+    { $lookup: { from: "products", localField: "_id", foreignField: "_id", as: "productDetails" } },
+    { $unwind: "$productDetails" },
+    {
+      $project: {
+        _id: "$productDetails._id",
+        pname: "$productDetails.pname",
+        totalQuantity: 1,
+        images: "$productDetails.images",
+        brand: "$productDetails.brand",
+      },
+    },
+  ]);
+};
+
+const getTopSellingCategories = async () => {
+  return await orderModel.aggregate([
+    { $match: { status: "Delivered" } },
+    { $unwind: "$items" },
+    { $lookup: { from: "products", localField: "items.productId", foreignField: "_id", as: "product" } },
+    { $unwind: "$product" },
+    { $group: { _id: "$product.category", totalSales: { $sum: "$items.quantity" } } },
+    { $lookup: { from: "categories", localField: "_id", foreignField: "_id", as: "category" } },
+    { $unwind: "$category" },
+    {
+      $project: {
+        name: "$category.name",
+        totalSales: 1,
+      },
+    },
+    { $sort: { totalSales: -1 } },
+    { $limit: 5 },
+  ]);
+};
+
+const getTopSellingBrands = async () => {
+  return await orderModel.aggregate([
+    { $match: { status: "Delivered" } },
+    { $unwind: "$items" },
+    { $lookup: { from: "products", localField: "items.productId", foreignField: "_id", as: "productDetails" } },
+    { $unwind: "$productDetails" },
+    { $group: { _id: "$productDetails.brand", totalSales: { $sum: "$items.quantity" } } },
+    { $sort: { totalSales: -1 } },
+    { $limit: 5 },
+  ]);
+};
+
+const calculateWeeklyEarnings = (orders) => {
+  
+  const yValues = [0, 0, 0, 0, 0, 0, 0];
+
+  orders.forEach((order) => {
+ 
+    const createdAt = new Date(order.createdAt);
+    if (!isNaN(createdAt)) {
+ 
+      const dayOfWeek = createdAt.getDay();
+
+      yValues[dayOfWeek] += order.billTotal;
+    }
+  });
+
+  return yValues;
+};
+
+
+const calculateSalesByCategory = (orders, categories) => {
+  const sales = new Array(categories.length).fill(0);
+  const allNames = categories.map((category) => category.name);
+  const allIds = categories.map((category) => category._id);
+
+  orders.forEach((order) => {
+    order.items.forEach((item) => {
+      const productCategory = allIds.findIndex((id) => id.equals(item.productId.category));
+      if (productCategory > -1) {
+        sales[productCategory] += item.quantity;
+      }
+    });
+  });
+
+  return { allNames, sales };
+};
+
+const getMonthlyEarnings = async () => {
+  try {
+    
+    const monthlyEarnings = await orderModel.aggregate([
+      { $match: { status: "Delivered" } },
+      { 
+        $group: { 
+          _id: { $dateToString: { format: "%m-%Y", date: "$createdAt" } }, 
+          totalEarnings: { $sum: "$billTotal" } 
+        } 
+      },
+      { $sort: { "_id": 1 } },
+    ]);
+
+   
+    
+    const months = [
+      "01-2024",
+      "02-2024",
+      "03-2024",
+      "04-2024",
+      "05-2024",
+    ];
+
+    // Map the monthly earnings to the respective months, returning 0 if no earnings are found for that month
+    return months.map((month) => {
+      const earnings = monthlyEarnings.find((e) => e._id === month);
+      return earnings ? earnings.totalEarnings : 0;
+    });
+    console.log();
+  } catch (error) {
+    console.error("Error fetching monthly earnings:", error);
+    throw error;
+  }
+};
+
+
+const getTotalEarnings = async () => {
+  const orders = await orderModel.find({ status: "Delivered" });
+  return orders.reduce((sum, order) => sum + order.billTotal, 0);
+};
+
+const getDailyEarnings = async () => {
+  return await orderModel.aggregate([
+    { $match: { status: "Delivered" } },
+    { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, totalEarnings: { $sum: "$billTotal" } } },
+    { $sort: { "_id": 1 } },
+  ]);
+};
 
 
 const logout = async(req,res)=>{
@@ -115,7 +506,7 @@ const unblockUser = async (req, res) => {
         console.log("789");
     }
   };
-
+   
 
 
 
@@ -133,7 +524,13 @@ const loadCategory = async(req,res)=>{
 
 const listUser = async(req,res)=>{
     try{
-        const userData = await user.find({is_admin:0});
+      let product=await userModel.find({list:true})
+      const perPage=3;
+          const page = parseInt(req.query.page) || 1;
+          const totalproducts= await userModel.countDocuments({});
+          const totalPage=Math.ceil(totalproducts / perPage);
+        const userData = await user.find({is_admin:0}).skip(perPage * (page - 1))
+        .limit(perPage);
         console.log(userData);
         res.render('userlist',{users:userData});
     }catch(error){
@@ -143,7 +540,12 @@ const listUser = async(req,res)=>{
 
 const loadorder =async(req,res)=>{
     try{
-        const order = await orderModel.find({}).populate({path:'user',model:'User'});
+      let product=await orderModel.find({list:true})
+      const perPage=8;
+          const page = parseInt(req.query.page) || 1;
+          const totalproducts= await orderModel.countDocuments({});
+          const totalPage=Math.ceil(totalproducts / perPage);
+        const order = await orderModel.find({}).populate({path:'user',model:'User'}).sort({createdAt:-1}).skip(perPage * (page -1)).limit(perPage);
         res.render('order',{order});
     }catch(error){
       console.log(error.message);
@@ -317,12 +719,14 @@ const loadorderdetails = async(req,res)=>{
 
   const offer=async(req,res)=>{
     try{
+      
         let product=await productModel.find({is_deleted:false});
-        const category=await categoryModel.find({is_deleted:false});
+        console.log(product);
+        const category=await categoryModel.find({is_active:true});
         for (let i = 0; i < product.length; i++) {
             const offerDate = new Date(product[i].offerTime);
             const currentDate=new Date();
-
+          
             if (currentDate > offerDate) {
                 product[i].discountPrice = 0;
                 product[i].offerTime = null;
@@ -369,9 +773,14 @@ const loadorderdetails = async(req,res)=>{
 
 const loadsales = async(req,res)=>{
     try{
-    const order=await orderModel.find({status: "Delivered"}).populate('user');
+      let product=await  ProductModel.find({list:true})
+        const perPage=8;
+            const page = parseInt(req.query.page) || 1;
+            const totalproducts= await ProductModel.countDocuments({});
+            const totalPage=Math.ceil(totalproducts / perPage);
+    const order=await orderModel.find({status: "Delivered"}).populate('user').skip(perPage * (page -1)).limit(perPage).sort({_id:-1});
     console.log(order)
-    res.render('adminsales',{order});
+    res.render('adminsales',{order:order.reverse()});
     }
     catch(err){
         console.log('sales details',err.message);
@@ -382,7 +791,7 @@ const loadsales = async(req,res)=>{
       const day = String(date.getDate()).padStart(2, '0');
       const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
       const year = date.getFullYear();
-      return `${year}-${month}-${day}`;
+      return `${day}/${month}/${year}`;
     };
     
     const formatDateToDDMMYYYY = (date) => {

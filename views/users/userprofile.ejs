@@ -766,16 +766,16 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane fade" id="orders">
+                         <div class="tab-pane fade" id="orders">
                             <h4>Orders</h4>
                             <div class="table_page table-responsive">
                                 <table>
                                     <thead>
                                         <tr>
                                             <th>Date</th>
-                                            <th>Product Name</th>
+                                            <th>Product ID</th>
                                             <th>Status</th>
-                                            <th>Order ID</th>
+                                            <th>Bill Total</th>
                                             <th>Actions</th>
                                         </tr> 
                                     </thead>
@@ -786,7 +786,8 @@
                                         { 
                                             for(let i=0;i<orders.length;i++) { %>
                                             <tr>
-                                                <td><%= orders[i].orderDate %></td>
+                                                <!-- <td><%= orders[i].orderDate %></td> -->
+                                                <td><%= new Date(orders[i].orderDate).toDateString().slice(4, 15) %></td>
                                                 <td>
                                                         <%=orders[i].oId%>
                                                 </td>
@@ -801,6 +802,29 @@
                                                                      
                                     
                                 </table>
+                                            <!-- Start Pagination  -->
+ <div class="page-pagination text-center" data-aos="fade-up" data-aos-delay="6">
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            <li class="page-item active" aria-current="page">
+                <a class="page-link" href="userprofile#order?page=1">1</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="userprofile#order?page=2">2</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="userprofile#order?page=3">3</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="userprofile#order?page=3">4</a>
+            </li>
+           
+            <li class="page-item">
+                <a class="page-link" href="userprofile#order?page=11"><i class="ion-ios-skipforward"></i></a>
+            </li>
+        </ul>
+    </nav>
+</div>
                             </div>
                         </div>
 

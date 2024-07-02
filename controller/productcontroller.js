@@ -1,11 +1,21 @@
 const productModel = require("../models/productModel");
 const categoryModel = require('../models/categoryModel');
 const userModel = require('../models/userModel');
+const ProductModel = require("../models/productModel");
+const sharp = require('sharp');
+const path = require('path');
+const fs = require('fs');
+
 
 
 const loadProduct = async(req,res)=>{
     try{
-        const productdetails = await productModel.find({}).populate('category');
+        let product=await ProductModel.find({list:true})
+        const perPage=10;
+            const page = parseInt(req.query.page) || 1;
+            const totalproducts= await ProductModel.countDocuments({});
+            const totalPage=Math.ceil(totalproducts / perPage);
+        const productdetails = await productModel.find({}).populate('category').skip(perPage * (page-1)).limit(perPage).sort({_id:-1});
         const categorydetails = await categoryModel.find({});
         res.render('addProduct',{product:productdetails,category:categorydetails,message:null});
 
@@ -15,38 +25,113 @@ const loadProduct = async(req,res)=>{
 };
 
 
-const addProduct = async(req,res)=>{
-    try{
+// // const addProduct = async(req,res)=>{
+//     try{
        
-        const images = req.files?req.files.map(file=> file.filename) :[] ;
+//         const images = req.files?req.files.map(file=> file.filename) :[] ;
+//         const product = new productModel({
+//             name:req.body.name,
+//             description :req.body.description,
+//             images:images,
+//             countInStock:req.body.stock,
+//             category: req.body.category,
+//             price: req.body.price,
+//             discountPrice: req.body.discountPrice,
+//         });
+
+//         const savedProduct = await product.save();
+        
+        
+        
+//         const categoryDetails = await categoryModel.find();
+//         if(savedProduct){
+//             res.redirect('/admin/product');
+//         }else{
+//             res.render('addProduct',{cate:categoryDetails,message:"Error Saaving Product"});
+//         }
+//         }catch(error){
+//             console.error('Error saving product:',error);
+
+//             res.status(500).send('Error saving product');
+//         }
+
+
+//     };
+
+// 
+
+const addProduct = async (req, res) => {
+    try {
+        const images = [];
+        const outputDirectory = path.join(__dirname, '../uploads/productImages/'); // Replace with your actual public directory
+
+        // Ensure the output directory exists
+        if (!fs.existsSync(outputDirectory)) {
+            fs.mkdirSync(outputDirectory, { recursive: true });
+        }
+
+        if (req.files) {
+            for (const file of req.files) {
+                const inputPath = file.path; // Assuming multer saves files in `req.files` with a `path` property
+                const outputFilename = `resized-${file.filename}`;
+                const outputPath = path.join(outputDirectory, outputFilename);
+
+                // Use Sharp to resize the image
+                await sharp(inputPath)
+                    .resize(700, 893) 
+                    .toFile(outputPath);
+
+                // Store the relative path to the image
+                images.push(`${outputFilename}`);
+            }
+        }
+
         const product = new productModel({
-            name:req.body.name,
-            description :req.body.description,
-            images:images,
-            countInStock:req.body.stock,
+            name: req.body.name,
+            description: req.body.description,
+            images: images,
+            countInStock: req.body.stock,
             category: req.body.category,
             price: req.body.price,
             discountPrice: req.body.discountPrice,
         });
 
         const savedProduct = await product.save();
-        
-        
-        
+
         const categoryDetails = await categoryModel.find();
-        if(savedProduct){
+        if (savedProduct) {
             res.redirect('/admin/product');
-        }else{
-            res.render('addProduct',{cate:categoryDetails,message:"Error Saaving Product"});
+        } else {
+            res.render('addProduct', { cate: categoryDetails, message: "Error Saving Product" });
         }
-        }catch(error){
-            console.error('Error saving product:',error);
+    } catch (error) {
+        console.error('Error saving product:', error);
+        res.status(500).send('Error saving product');
+    }
+};
 
-            res.status(500).send('Error saving product');
-        }
 
 
-    };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -146,7 +231,7 @@ const editProduct = async(req,res)=>{
                     images:allImages,
                     category:req.body.category,
                     price:req.body.price,
-                    descountPrice:req.body.discountPrice,
+                    discountPrice:req.body.discountPrice,
                     countInStock:req.body.stock,
                 }
             }, {new:true});
@@ -169,6 +254,10 @@ const loadIndividualProduct = async (req, res) => {
 
         const id = req.query.id;
         console.log(req.query.id);
+        const perPage=8;
+        const page = parseInt(req.query.page) || 1;
+        const totalproducts= await productModel.countDocuments({});
+        const totalPage=Math.ceil(totalproducts / perPage);
         const productData = await productModel.findById({ _id: id}).populate('category');
         const relatedProducts = await productModel.find({ category: productData.category }).limit(5);
         console.log(relatedProducts,"relatedproduct");
@@ -241,7 +330,8 @@ const updatepro = async (req, res) => {
                 brand: req.body.brand,
                 category: req.body.category,
                 price: req.body.price,
-                countInStock: req.body.stock
+                countInStock: req.body.stock,
+                discountPrice:category.discountPrice
             },
             $unset: {
                 offerTime: "",

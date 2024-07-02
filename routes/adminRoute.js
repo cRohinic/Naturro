@@ -54,36 +54,36 @@ admin_route.get('/userlist',auth.isLogin,adminController.listUser);
 admin_route.get('/block-user',auth.isLogin,adminController.blockUser);
 admin_route.get('/unblock-user',auth.isLogin,adminController.unblockUser);
 admin_route.get('/category',auth.isLogin,adminController.loadCategory);
-admin_route.post('/category',category.createCategory);
+admin_route.post('/category',auth.isLogin,category.createCategory);
 
-admin_route.get('/order',adminController.loadorder);
+admin_route.get('/order',auth.isLogin,adminController.loadorder);
 
-admin_route.get('/couponlist',couponController.listCoupons);
-admin_route.get('/createcoupon',couponController.loadcreatecoupon);
-admin_route.post('/createcoupon',couponController.createCoupon)
-admin_route.post('/togglecoupon',couponController.toggleCouponStatus);
+admin_route.get('/couponlist',auth.isLogin,couponController.listCoupons);
+admin_route.get('/createcoupon',auth.isLogin,couponController.loadcreatecoupon);
+admin_route.post('/createcoupon',auth.isLogin,couponController.createCoupon)
+admin_route.post('/togglecoupon',auth.isLogin,couponController.toggleCouponStatus);
 
-admin_route.get('/adminorderDetails',adminController.loadorderdetails);
-admin_route.post('/acceptcancel',adminController.requestAccept);
-admin_route.post('/rejectcancel',adminController.requestCancel);
-admin_route.post('/updateorderstatus',adminController.updateorder);
+admin_route.get('/adminorderDetails',auth.isLogin,adminController.loadorderdetails);
+admin_route.post('/acceptcancel',auth.isLogin,adminController.requestAccept);
+admin_route.post('/rejectcancel',auth.isLogin,adminController.requestCancel);
+admin_route.post('/updateorderstatus',auth.isLogin,adminController.updateorder);
 
 
-admin_route.get("/adminsales",adminController. loadsales)
-admin_route.get("/salesDate",adminController.dateFilter)
+admin_route.get("/adminsales",auth.isLogin,adminController. loadsales)
+admin_route.get("/salesDate",auth.isLogin,adminController.dateFilter)
 
-admin_route.get('/offer',adminController.offer);
-admin_route.get("/date",adminController.sortDate)
+admin_route.get('/offer',auth.isLogin,adminController.offer);
+admin_route.get("/date",auth.isLogin,adminController.sortDate)
 
-admin_route.get('/pdf',adminController.pdf);
+admin_route.get('/pdf',auth.isLogin,adminController.pdf);
 admin_route.get('/edit-cate',auth.isLogin,category.editCategoryLoad);
-admin_route.post('/edit-cate',category.updateCate);
-admin_route.get('/delete-cate',auth.isLogin,category.deleteCate);
+admin_route.post('/edit-cate',auth.isLogin,category.updateCate);
+admin_route.get('/delete-cate',auth.isLogin,auth.isLogin,category.deleteCate);
 admin_route.get('/product',auth.isLogin,productController.loadProduct);
-admin_route.post('/product',upload,productController.addProduct);
+admin_route.post('/product',auth.isLogin,upload,productController.addProduct);
 admin_route.get('/active',auth.isLogin,productController.activeStatus);
 admin_route.get('/editproduct',auth.isLogin,productController.loadEdit);
-admin_route.post('/editproduct',upload,productController.editProduct);
-admin_route.get('/deleteimage',productController.deleteimage);
+admin_route.post('/editproduct',auth.isLogin,upload,productController.editProduct);
+admin_route.get('/deleteimage',auth.isLogin,productController.deleteimage);
 
 module.exports = admin_route;

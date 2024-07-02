@@ -36,10 +36,16 @@
                 <img src="admin-assets/imgs/Untitled.png" class="logo" alt="Evara Dashboard">
             </a>
             <div>
-                <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i> </button>
+                <button class="btn btn-icon btn-aside-minimize"><i class="text-muted material-icons md-menu_open"></i></button>
             </div>
         </div>
         <nav>
+            <li class="menu-item active ">
+                <a class="menu-link" href="/admin/home"> <i class="icon material-icons md-home"></i>
+                    <span class="text">Dashboard</span>
+                </a>
+            </li>
+            
             <ul class="menu-aside">
                 <li class="menu-item">
                     <a class="menu-link" href="/admin/userlist"> <!-- Placeholder link for Users -->
@@ -67,34 +73,37 @@
                 </li>
                 <li class="menu-item">
                     <a class="menu-link" href="/admin/couponlist"> <!-- Placeholder link for orders -->
-                        <i class="icon material-icons md-redeem coupon-icon"></i>
+                        <i class="icon material-icons md-shopping_bag"></i>
                         <span class="text">Coupons</span>
                     </a>
                 </li>
                 <li class="menu-item">
                     <a class="menu-link" href="/admin/offer"> <!-- Placeholder link for orders -->
-                        <i class="icon material-icons md-local_shipping"></i>
+                        <i class="icon material-icons md-shopping_bag"></i>
                         <span class="text">Offers</span>
                     </a>
                 </li>
                 <li class="menu-item">
                     <a class="menu-link" href="/admin/adminsales"> <!-- Placeholder link for orders -->
-                        <i class="icon material-icons md-local_shipping"></i>
+                        <i class="icon material-icons md-store"></i>
                         <span class="text">Sales Report</span>
                     </a>
+                   
                 </li>
             </ul>
         </nav>
+
+
+        
     </aside>
-    
 
     <main class="main-wrap">
         <header class="main-header navbar">
             <div class="col-nav ms-auto">
-                <button class="btn btn-icon btn-mobile me-auto" data-trigger="#offcanvas_aside"> <i class="material-icons md-apps"></i> </button>
+                <button class="btn btn-icon btn-mobile me-auto" data-trigger="#offcanvas_aside"><i class="material-icons md-apps"></i></button>
                 <ul class="nav">
                     <li class="nav-item">
-                        <a class="nav-link btn-icon darkmode" href="#"> <i class="material-icons md-nights_stay"></i> </a>
+                        <a class="nav-link btn-icon darkmode" href="#"><i class="material-icons md-nights_stay"></i></a>
                     </li>
                     <li class="dropdown nav-item">
                         <a class="dropdown-item text-danger" href="/admin/logout"><i class="material-icons md-exit_to_app"></i>Logout</a>
@@ -106,18 +115,18 @@
             <div class="card">
                 <ul class="nav nav-tabs" role="tablist">
                     <li class="nav-item">
-                        <a class="nav-link active" data-bs-toggle="tab" href="#menu1">product offer</a>
+                        <a class="nav-link active" data-bs-toggle="tab" href="#menu1">Product Offer</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="tab" href="#menu2">Category offer</a>
+                        <a class="nav-link" data-bs-toggle="tab" href="#menu2">Category Offer</a>
                     </li>
                 </ul>
                 <div class="tab-content">
-                    <div id="menu1" class="container tab-pane active"><br>
-                        <h3>product offer</h3>
+                    <div id="menu1" class="container tab-pane fade show active"><br>
+                        <h3>Product Offer</h3>
                         <div class="row">
-                            <% if (typeof product !== 'undefined' && product.length > 0) {
-                                for (let i = 0; i < product.length; i++) { %>
+                            <% if (typeof product !== 'undefined' && product.length > 0) { %>
+                                <% for (let i = 0; i < product.length; i++) { %>
                                     <div class="col-xl-3 col-lg-4 col-md-6">
                                         <div class="card card-product-grid">
                                             <a href="#" class="img-wrap">
@@ -131,164 +140,143 @@
                                                 </div>
                                                 <a href="#" class="title"><%= product[i].name %></a>
                                                 <div class="price mt-1">
-                                                    <%if(product[i].discountPrice>0){%>
-                                                    <del>RS.<%= product[i].price %>.00</del> RS.<%= product[i].price -product[i].discountPrice %>.00
-                                                    <%}else{%>
-                                                    RS.<%= product[i].price%>.00
-                                                    <%}%>
+                                                    <% if (product[i].discountPrice > 0) { %>
+                                                        <del>₹<%= product[i].price %>.00</del> ₹<%= product[i].price - product[i].discountPrice %>.00
+                                                    <% } else { %>
+                                                        ₹<%= product[i].price %>.00
+                                                    <% } %>
                                                 </div>
                                                 <div id="offer">
-                                                    <%if(product[i].discountPrice===0){%>
-                                                    <form id="productOfferForm<%= product[i]._id %>" action="/admin/productoffer" method="post" onsubmit="return validateForm('<%= product[i]._id %>')">
-                                                        <div class="form-group mt-2">
-                                                            <label for="offerInput<%= product[i]._id %>" class="form-label">Offer:</label>
-                                                            <input type="number" min="2" max="90" name="discount" class="form-control" id="offerInput<%= product[i]._id %>" placeholder="Enter offer discount" required>
-                                                            <div id="offerError<%= product[i]._id %>" class="error"></div>
-                                                        </div>
-                                                        <div class="form-group mt-2">
-                                                            <label for="dateInput<%= product[i]._id %>" class="form-label">Expired Date:</label>
-                                                            <input type="date" class="form-control" name="date" id="dateInput<%= product[i]._id %>" placeholder="Select date" min="<%= new Date().toISOString().split('T')[0]  %>" required>
-                                                            <div id="dateError<%= product[i]._id %>" class="error"></div>
-                                                            <input value="<%= product[i]._id %>" name="proId" type="hidden">
-                                                        </div>
-                                                        <button class="btn btn-sm btn-outline-primary mt-2" type="submit">submit</button>
-                                                    </form>
-                                                    <%}%>
+                                                    <% if (product[i].discountPrice === 0) { %>
+                                                        <form id="productOfferForm<%= product[i]._id %>" action="/admin/productoffer" method="post" onsubmit="return validateForm('<%= product[i]._id %>')">
+                                                            <div class="form-group mt-2">
+                                                                <label for="offerInput<%= product[i]._id %>" class="form-label">Offer:</label>
+                                                                <input type="number" min="2" max="90" name="discount" class="form-control" id="offerInput<%= product[i]._id %>" placeholder="Enter offer discount" required>
+                                                                <div id="offerError<%= product[i]._id %>" class="error"></div>
+                                                            </div>
+                                                            <div class="form-group mt-2">
+                                                                <label for="dateInput<%= product[i]._id %>" class="form-label">Expired Date:</label>
+                                                                <input type="date" class="form-control" name="date" id="dateInput<%= product[i]._id %>" placeholder="Select date" min="<%= new Date().toISOString().split('T')[0] %>" required>
+                                                                <div id="dateError<%= product[i]._id %>" class="error"></div>
+                                                                <input value="<%= product[i]._id %>" name="proId" type="hidden">
+                                                            </div>
+                                                            <button class="btn btn-primary mt-2" type="submit">Add Offer</button>
+                                                        </form>
+                                                    <% } %>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                <% }
-                            } %>
+                                <% } %>
+                            <% } else { %>
+                                <div class="col-12">
+                                    <p>No products found.</p>
+                                </div>
+                            <% } %>
                         </div>
                     </div>
-
                     <div id="menu2" class="container tab-pane fade"><br>
-                        <h3>Category offer</h3>
+                        <h3>Category Offer</h3>
                         <div class="row">
-                            <% if (typeof categories !== 'undefined' && categories.length > 0) {
-                                for (let i = 0; i < categories.length; i++) { %>
+                            <% if (typeof category !== 'undefined' && category.length > 0) { %>
+                                <% for (let i = 0; i < category.length; i++) { %>
                                     <div class="col-xl-3 col-lg-4 col-md-6">
                                         <div class="card card-product-grid">
-                                            <a href="#" class="img-wrap">
-                                                <img src="/uploads/categoryImages/<%= categories[i].image %>" alt="Category">
-                                            </a>
+                                            
                                             <div class="info-wrap">
-                                                <div class="dropdown float-end">
-                                                    <a href="/admin/edit-cate?id=<%= categories[i]._id %>" class="btn btn-sm btn-brand rounded">
+                                                <!-- <div class="dropdown float-end">
+                                                    <a href="/admin/editcategory?id=<%= category[i]._id %>" class="btn btn-sm btn-brand rounded">
                                                         <i class="material-icons md-edit mr-5"></i>Edit
                                                     </a>
-                                                </div>
-                                                <a href="#" class="title"><%= categories[i].name %></a>
-                                                <div class="price mt-1">
-                                                    <%if(categories[i].discount>0){%>
-                                                    <del><%= categories[i].discount %>%</del> <%= categories[i].discount %>%
-                                                    <%}else{%>
-                                                    <%= categories[i].discount%>%
-                                                    <%}%>
-                                                </div>
+                                                </div> -->
+                                                <a href="#" class="title"><%= category[i].name %></a>
                                                 <div id="offer">
-                                                    <%if(categories[i].discount===0){%>
-                                                    <form id="categoryOfferForm<%= categories[i]._id %>" action="/admin/edit-cate" method="post" onsubmit="return validateCategoryForm('<%= categories[i]._id %>')">
-                                                        <div class="form-group mt-2">
-                                                            <label for="categoryOfferInput<%= categories[i]._id %>" class="form-label">Offer:</label>
-                                                            <input type="number" min="2" max="90" name="discount" class="form-control" id="categoryOfferInput<%= categories[i]._id %>" placeholder="Enter offer discount" required>
-                                                            <div id="categoryOfferError<%= categories[i]._id %>" class="error"></div>
-                                                        </div>
-                                                        <div class="form-group mt-2">
-                                                            <label for="categoryDateInput<%= categories[i]._id %>" class="form-label">Expired Date:</label>
-                                                            <input type="date" class="form-control" name="date" id="categoryDateInput<%= categories[i]._id %>" placeholder="Select date" min="<%= new Date().toISOString().split('T')[0]  %>" required>
-                                                            <div id="categoryDateError<%= categories[i]._id %>" class="error"></div>
-                                                            <input value="<%= categories[i]._id %>" name="catId" type="hidden">
-                                                        </div>
-                                                        <button class="btn btn-sm btn-outline-primary mt-2" type="submit">submit</button>
-                                                    </form>
-                                                    <%}%>
+                                                    
+                                                        <form id="categoryOfferForm<%= category[i]._id %>" action="/admin/categoryoffer" method="post" onsubmit="return validateCategoryForm('<%= category[i]._id %>')">
+                                                            <div class="form-group mt-2">
+                                                                <label for="categoryOfferInput<%= category[i]._id %>" class="form-label">Offer:</label>
+                                                                <input type="number" min="2" max="90" name="discount" class="form-control" id="categoryOfferInput<%= category[i]._id %>" placeholder="Enter offer discount" required>
+                                                                <div id="categoryOfferError<%= category[i]._id %>" class="error"></div>
+                                                            </div>
+                                                            <div class="form-group mt-2">
+                                                                <label for="categoryDateInput<%= category[i]._id %>" class="form-label">Expired Date:</label>
+                                                                <input type="date" class="form-control" name="date" id="categoryDateInput<%= category[i]._id %>" placeholder="Select date" min="<%= new Date().toISOString().split('T')[0] %>" required>
+                                                                <div id="categoryDateError<%= category[i]._id %>" class="error"></div>
+                                                                <input value="<%= category[i]._id %>" name="categoryId" type="hidden">
+                                                            </div>
+                                                            <button class="btn btn-primary mt-2" type="submit">Add Offer</button>
+                                                        </form>
+                                                   
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                <% }
-                            } %>
+                                <% } %>
+                            <% } %>
                         </div>
                     </div>
                 </div>
             </div>
+
+
+           
+
         </section>
-        <footer class="main-footer text-center">
-            <p class="font-xs">
-                <script>
-                    document.write(new Date().getFullYear());
-                </script> &copy; Evara - HTML Ecommerce Template . All rights reserved
-            </p>
-            <p class="font-xs mb-30">Design by <a href="http://alithemes.com" target="_blank">Alithemes.com</a></p>
-        </footer>
     </main>
-    <script src="/admin-assets/js/vendor/jquery-3.6.0.min.js"></script>
-    <script src="/admin-assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>
-    <script src="/admin-assets/js/vendor/bootstrap.bundle.min.js"></script>
-    <script src="/admin-assets/js/plugins/slick.js"></script>
-    <script src="/admin-assets/js/plugins/jquery.syotimer.min.js"></script>
-    <script src="/admin-assets/js/plugins/wow.js"></script>
-    <script src="/admin-assets/js/plugins/jquery-ui.js"></script>
-    <script src="/admin-assets/js/plugins/perfect-scrollbar.js"></script>
-    <script src="/admin-assets/js/plugins/magnific-popup.js"></script>
-    <script src="/admin-assets/js/plugins/select2.min.js"></script>
-    <script src="/admin-assets/js/plugins/waypoints.js"></script>
-    <script src="/admin-assets/js/plugins/counterup.js"></script>
-    <script src="/admin-assets/js/plugins/jquery.countdown.min.js"></script>
-    <script src="/admin-ssets/js/plugins/images-loaded.js"></script>
-    <script src="/admin-assets/js/plugins/isotope.js"></script>
-    <script src="/admin-assets/js/plugins/scrollup.js"></script>
-    <script src="/admin-assets/js/plugins/jquery.vticker-min.js"></script>
-    <script src="/admin-assets/js/plugins/jquery.theia.sticky.js"></script>
-    <script src="/admin-assets/js/plugins/jquery.elevatezoom.js"></script>
-    <script src="/admin-assets/js/main.js?v=3.3"></script>
-    <script src="/admin-assets/js/shop.js?v=3.3"></script>
+
+    <script src="/admin-assets/js/vendors/jquery-3.6.0.min.js"></script>
+    <script src="/admin-assets/js/vendors/bootstrap.bundle.min.js"></script>
+    <script src="/admin-assets/js/vendors/select2.min.js"></script>
+    <script src="/admin-assets/js/vendors/perfect-scrollbar.js"></script>
+    <script src="/admin-assets/js/vendors/jquery.fullscreen.min.js"></script>
+    <script src="/admin-assets/js/vendors/chart.js"></script>
+    <script src="/admin-assets/js/main.js?v=1.1" type="text/javascript"></script>
+    <script src="/admin-assets/js/custom-chart.js" type="text/javascript"></script>
+
     <script>
         function validateForm(productId) {
-            const offerInput = document.getElementById('offerInput' + productId);
-            const dateInput = document.getElementById('dateInput' + productId);
-            const offerError = document.getElementById('offerError' + productId);
-            const dateError = document.getElementById('dateError' + productId);
-
+            let offerInput = document.getElementById('offerInput' + productId);
+            let dateInput = document.getElementById('dateInput' + productId);
+            let offerError = document.getElementById('offerError' + productId);
+            let dateError = document.getElementById('dateError' + productId);
             let isValid = true;
+
             if (offerInput.value < 2 || offerInput.value > 90) {
-                offerError.innerHTML = 'Please enter a valid discount between 2% and 90%.';
+                offerError.innerText = 'Offer must be between 2% and 90%.';
                 isValid = false;
             } else {
-                offerError.innerHTML = '';
+                offerError.innerText = '';
             }
 
             if (!dateInput.value) {
-                dateError.innerHTML = 'Please select a valid expiration date.';
+                dateError.innerText = 'Please select a date.';
                 isValid = false;
             } else {
-                dateError.innerHTML = '';
+                dateError.innerText = '';
             }
 
             return isValid;
         }
 
         function validateCategoryForm(categoryId) {
-            const categoryOfferInput = document.getElementById('categoryOfferInput' + categoryId);
-            const categoryDateInput = document.getElementById('categoryDateInput' + categoryId);
-            const categoryOfferError = document.getElementById('categoryOfferError' + categoryId);
-            const categoryDateError = document.getElementById('categoryDateError' + categoryId);
-
+            let offerInput = document.getElementById('categoryOfferInput' + categoryId);
+            let dateInput = document.getElementById('categoryDateInput' + categoryId);
+            let offerError = document.getElementById('categoryOfferError' + categoryId);
+            let dateError = document.getElementById('categoryDateError' + categoryId);
             let isValid = true;
-            if (categoryOfferInput.value < 2 || categoryOfferInput.value > 90) {
-                categoryOfferError.innerHTML = 'Please enter a valid discount between 2% and 90%.';
+
+            if (offerInput.value < 2 || offerInput.value > 90) {
+                offerError.innerText = 'Offer must be between 2% and 90%.';
                 isValid = false;
             } else {
-                categoryOfferError.innerHTML = '';
+                offerError.innerText = '';
             }
 
-            if (!categoryDateInput.value) {
-                categoryDateError.innerHTML = 'Please select a valid expiration date.';
+            if (!dateInput.value) {
+                dateError.innerText = 'Please select a date.';
                 isValid = false;
             } else {
-                categoryDateError.innerHTML = '';
+                dateError.innerText = '';
             }
 
             return isValid;

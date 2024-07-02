@@ -630,8 +630,8 @@
                     <!-- <p class="text-danger">Payment : Pending</p> -->
                     <form action="" method="post">
                     <label class="radio-default d-flex">
-                        <input type="radio" name="paymentOption" style="width: 15px;" id="razorpay" value="razorpay" required>
-                            <!-- <span>Online Payment</span> -->
+
+                            <span>Online Payment</span>
                             </label>
                            <input type="hidden" id="id" value="<%=order.oId%>">
                             <div class="order_button pt-3">
@@ -755,7 +755,34 @@
     </div>
     
 
+<!-- start Pagination -->
 
+
+
+
+
+<!--                
+                <div class="page-pagination text-center" data-aos="fade-up" data-aos-delay="6">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            <li class="page-item active" aria-current="page">
+                                <a class="page-link" href="shop?page=1">1</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="shop?page=2">2</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="shop?page=3">3</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="shop?page=4"><i class="ion-ios-skipforward"></i></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                 -->
+                
+                
 
 
 
@@ -1189,6 +1216,7 @@
 }
     </script>
 
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <script>
     
@@ -1236,6 +1264,65 @@ function returnOrder(oId) {
     });
 }
    
+const revisePayment = document.getElementById('proceedButton');
+
+revisePayment.addEventListener('click', async () => {
+  try {
+    const orderId=document.getElementById('id').value
+    const retryResponse = await fetch('/retrypayment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({orderId})
+    });
+
+    const retryData = await retryResponse.json();
+    const { order} = retryData;
+
+    console.log(order.amount);
+    console.log(order.id);
+
+    const options = {
+      key: 'rzp_test_V59oBpkY2QETZI',
+      amount: order.amount,
+      currency: 'INR',
+      name: 'NATUURO',
+      description: 'Order Payment',
+      order_id: order.id,
+      handler: function (response) {
+        if (response.razorpay_payment_id) {
+          // Payment successful
+          swal("Success!", "Payment completed successfully!", "success");
+        } else {
+          // Handle payment failure
+          swal("Payment Failed", "Something went wrong during payment. Please try again.", "error");
+        }
+      },
+      modal: {
+        ondismiss: function () {
+          // Handle modal dismissal (optional)
+        }
+      },
+      prefill: {
+        name: 'Customer Name',
+        email: 'customer@example.com',
+        contact: '1234567890'
+      },
+      theme: {
+        color: '#3399cc'
+      }
+    };
+
+    const rzp1 = new Razorpay(options);
+    rzp1.open();
+
+  } catch (error) {
+    console.error("Error during payment retry:", error);
+    swal("Error", "An error occurred while processing the payment. Please try again.", "error");
+  }
+});
+
 
 </script>
 </body>

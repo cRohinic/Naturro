@@ -568,7 +568,8 @@
                                             <% if (order) { %>
                                                 <div class="py-2">
                                                     <span class="d-block text-muted">Order Date</span>
-                                                    <span><%= order.orderDate %></span>
+                                                    <!-- <span><%= order.orderDate %></span> -->
+                                                    <td><%= new Date(order.orderDate).toDateString().slice(4, 15) %></td>
                                                 </div>
                                             <% } else { %>
                                                 <div>Order information is not available.</div>
@@ -665,7 +666,7 @@
                         </div>
                         <p>We will be sending a shipping confirmation email when the item is shipped successfully!</p>
                         <p class="font-weight-bold mb-0">Thanks for shopping with us!</p>
-                        <span>Nail Style Team</span>
+                        <span>natuuro,kollam</span>
                     </div>
                     <div class="d-flex justify-content-between footer p-3">
                         <span>Need Help? Visit our <a href="#">help center</a></span>
@@ -944,6 +945,26 @@
                                         <div class="gallery-thumb-arrow swiper-button-prev"></div>
                                     </div>
                                     <!-- End Thumbnail Image -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                    
                                 </div>
                             </div>
                             <div class="col-md-6">

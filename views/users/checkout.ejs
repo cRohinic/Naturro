@@ -761,8 +761,9 @@
                                                     href="/productdetails?id=<%=cart.items[i].productId._id %>">
                                                     <%=cart.items[i].productId.name%>
                                                 </a></td>
-                                            <td class="product_total" id="carttotal">Rs.<%=cart.items[i].price%>.00
+                                            <td class="product_total" id="carttotal">Rs.<%=cart.items[i].productId.price-cart.items[i].productId.discountPrice%>.00 &nbsp; &nbsp; &nbsp; X  &nbsp;&nbsp;&nbsp;   <%=cart.items[i].quantity%>
                                             </td>
+                                           
                                         </tr>
                                         <%}%>
                                 </tbody>
@@ -771,11 +772,9 @@
                                     <td>
 
                                         <strong>
-                                            <% if (cart.discountPrice> 0) { %>
-                                                Rs.<%= cart.discountPrice %>.00
-                                                    <% } else { %>
+                               
                                                         Rs.<%= cart.billTotal %>.00
-                                                            <% } %>
+                                                        
                                         </strong>
                                     </td>
                                 </tr>
@@ -1212,75 +1211,116 @@
     
 
     <script>
-       document.getElementById('proceedButton').addEventListener("click", async (e) => {
-    e.preventDefault(); 
-    let data = {}
+        document.getElementById('proceedButton').addEventListener("click", async (e) => {
+            e.preventDefault(); 
+            let data = {}
+    
+            const selectedAddressType = document.querySelector('input[name="address"]:checked');
+    const selectedPaymentOption = document.querySelector('input[name="paymentOption"]:checked');
 
-    const a_id = document.querySelector('input[name="address"]:checked').value;
-    const paymentOption = document.querySelector('input[name="paymentOption"]:checked').value;
-    data.addressType= a_id
-    data.paymentOption = paymentOption
-    console.log(data);
-
-    if (paymentOption === "razorpay") {
-        const res = await fetch('/razorpay', {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ data })
-        })
-        let { order, resurl } = await res.json()
-
-        console.log(order.amount);
-        console.log(order.id);
-
-        var options = {
-            key: 'rzp_test_V59oBpkY2QETZI',
-            amount: order.amount,
-            currency: 'INR',
-            name: 'NATUURO',
-            description: 'Order Payment',
-            order_id: order.id,
-            handler: function (response) {
-                window.location.href = `payment?razor=${response.razorpay_payment_id}`;
-            },
-            "modal": {
-                "ondismiss": function () {
-                    window.location.href = `/orderdetails?oId=${resurl}`;
-                }
-            },
-            prefill: {
-                name: 'Customer Name',
-                email: 'customer@example.com',
-                contact: '1234567890'
-            },
-            theme: {
-                color: '#3399cc'
-            },
-        };
-        var rzp1 = new Razorpay(options);
-        rzp1.open();
-    } else{
-        
-const res = await fetch('/checkout', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data) 
-});
-
-const result = await res.json();
-
-    // alert(result.order_id)
-    alert('hi')
-    window.location.href = `/orderconfirmed?id=${result.order_id}`;
-
-
+    if (!selectedAddressType || !selectedPaymentOption) {
+        Swal.fire({
+  title: 'Attention!',
+  text: 'Please select both an address type and a payment option.',
+  icon: 'warning',
+  confirmButtonText: 'OK'
+    });
+ return;
     }
-});
-       </script>
+
+    const a_id = selectedAddressType.value;
+    const paymentOption = selectedPaymentOption.value;
+            data.addressType = a_id;
+            data.paymentOption = paymentOption;
+            console.log(data);
+    
+            if (paymentOption === "razorpay") {
+                const res = await fetch('/razorpay', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ data })
+                });
+    
+                let { order, resurl } = await res.json();
+    
+                console.log(order.amount);
+                console.log(order.id);
+    
+                var options = {
+                    key: 'rzp_test_V59oBpkY2QETZI',
+                    amount: order.amount,
+                    currency: 'INR',
+                    name: 'NATUURO',
+                    description: 'Order Payment',
+                    order_id: order.id,
+                    handler: function (response) {
+                        window.location.href = `payment?razor=${response.razorpay_payment_id}`;
+                    },
+                    "modal": {
+                        "ondismiss": function () {
+                            window.location.href = `/orderdetails?oId=${resurl}`;
+                        }
+                    },
+                    prefill: {
+                        name: 'Customer Name',
+                        email: 'customer@example.com',
+                        contact: '1234567890'
+                    },
+                    theme: {
+                        color: '#3399cc'
+                    },
+                };
+    
+                var rzp1 = new Razorpay(options);
+                     rzp1.open();
+                rzp1.on('payment.failed', function (response) {
+                    const paymentFailureData = {
+                        razorpay_payment_id: response.error.metadata.payment_id,
+                        razorpay_order_id: response.error.metadata.order_id,
+                        razorpay_signature: response.error.metadata.signature,
+                        address: data.addressType
+                    };
+    
+                    fetch('/failedPayment', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(paymentFailureData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log("Payment failure logged successfully");
+                            window.location.href = `/ordercancelled?id=${data.orderId}`;
+                        } else {
+                            console.error("Failed to log payment failure");
+                        }
+                    })
+                    .catch(error => console.error('Error logging payment failure:', error));
+                });
+    
+                // rzp1.open();
+            } else {
+                const res = await fetch('/checkout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data) 
+                });
+    
+                const result = await res.json();
+    
+                // alert('hi');
+                window.location.href = `/orderconfirmed?id=${result.order_id}`;
+                
+            }
+        });
+    </script>
+    
        
 
 

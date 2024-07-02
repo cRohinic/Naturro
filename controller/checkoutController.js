@@ -154,9 +154,14 @@ async function generateUniqueOrderID() {
   const loadorderconfirmed = async (req, res) => {
   
     try {
+        let product=await  orderModel.find({list:true})
+        const perPage=8;
+            const page = parseInt(req.query.page) || 1;
+            const totalproducts= await orderModel.countDocuments({});
+            const totalPage=Math.ceil(totalproducts / perPage);
         const orderId = req.query.id;
         console.log(orderId);
-        const order = await orderModel.findOne({oId:orderId});
+        const order = await orderModel.findOne({oId:orderId}).skip(perPage * (page-1)).limit(perPage).sort({_id:-1});
        
         if (!order) {
            
@@ -354,6 +359,7 @@ console.log(arr[0],'delivvvvvvveeeeeeeeeerrrrrrrrrr');
           });
           
           for (const item of cart.items) {
+            console.log(item);
               orderData.items.push({
                   productId: item.productId._id,
                   image: item.productId.images[0],
@@ -412,25 +418,116 @@ const Instance = new razorpay({
 
 
 
-const revisePayment = async(req,res)=>{
-    try{
-        console.log(req.session.order);
-        const orders = await orderModel.findOne({_id:req.session.order});
-        console.log(orders,"orders vannu");
-        const order = await instance.orders.create({
-            amount: orders.billTotal * 100, 
-            currency: "INR",
-            receipt: await generateUniqueOrderID(),
-        });
+const revisePayment = async (req, res) => {
+    try {
+      console.log('hiiiiii');
+      const orderId = req.body.orderId;
+      const orders = await orderModel.findOne({ oId: orderId });
+  
+      if (!orders) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+  
+     
+      const amount = orders.billTotal * 100;
+  
+     
+      const receipt = await generateUniqueOrderID(); 
+      const order = await instance.orders.create({
+        amount,
+        currency: "INR",
+        receipt,
+      });
+  
+      console.log("Razorpay order created:", order); 
+      orders.paymentStatus='Success';
+      await orders.save();
+      res.json({ order });
+    } catch (error) {
+      console.error("Error during payment retry:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };
+  
 
-        console.log(order+'kittum');
-        res.json({order})
-    }catch(error){
+const failedPayment = async (req, res) => {
+    try {
+        
+       
+        const address = req.body.address || 'home';
+        const user = await User.findById(req.session.user );
+        
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+        const OrderAddress = await addressModel.findOne({ user: req.session.user });
+  
+        if (!OrderAddress) {
+          return res.status(400).json({ message: "Address not found" });
+        }
+    
+        const addressdetails = OrderAddress.addresses.find(item => item.addressType === address);
+    
+        if (!addressdetails) {
+         
+        }
+        const cart = await cartModel.findOne({ owner: req.session.user }).populate({path:'items.productId',model:'Products'});
+        
+        if (!cart) {
+            return res.status(404).json({ success: false, message: "Cart not found" });
+        }
+  
+        const selectedItems = cart.items;
+  
+  
+        const order_id = await generateUniqueOrderID();
+        const orderData = new orderModel({
+            user: req.session.user,
+            
+            
+            billTotal: cart.billTotal, 
+            oId: order_id, 
+            paymentStatus: "Pending",
+            paymentMethod: 'razorpay',
+            deliveryAddress: addressdetails, 
+            coupon: cart.coupon,
+            discountPrice: cart.discountPrice
+        });
+  
+        for (const item of selectedItems) {
+          orderData.items.push({
+            productId:item.productId._id,
+            image:item.productId.images[0],
+            name:item.productId.name,
+            productPrice:item.productId.price,
+            quantity:item.quantity,
+            price:item.price
+          })
+      }
+  
+        await orderData.save();
+      
+       
+        cart.items = [];
+        cart.isApplied=false;
+        await cart.save();
+  
+        return res.json({ success: true, message: "Order processed successfully", orderId: order_id });
+    } catch (error) {
+        console.error('Failed Payment:', error);
+        return res.status(500).json({ success: false, message: "Failed to process order. Please try again later" });
+    }
+  };
+  
+const orderCancelled=async(req,res)=>{
+    try {
+        const id=req.query.id;
+        const order=await orderModel.findOne({oId:id})
+        res.render('ordercancelled',{order})
+    } catch (error) {
         console.log(error.message);
     }
 }
-
-
 
 
 
@@ -445,5 +542,7 @@ module.exports = {
     orderonlineload ,
     razorpayFn,
     payment,
-    revisePayment
+    revisePayment,
+    failedPayment,
+    orderCancelled
 }

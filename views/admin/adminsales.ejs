@@ -32,6 +32,12 @@
             </div>
         </div>
         <nav>
+            <li class="menu-item active ">
+                <a class="menu-link" href="/admin/home"> <i class="icon material-icons md-home"></i>
+                    <span class="text">Dashboard</span>
+                </a>
+            </li>
+            
             <ul class="menu-aside">
                 <li class="menu-item">
                     <a class="menu-link" href="/admin/userlist"> <!-- Placeholder link for Users -->
@@ -59,24 +65,28 @@
                 </li>
                 <li class="menu-item">
                     <a class="menu-link" href="/admin/couponlist"> <!-- Placeholder link for orders -->
-                        <i class="icon material-icons md-redeem coupon-icon"></i>
+                        <i class="icon material-icons md-shopping_bag"></i>
                         <span class="text">Coupons</span>
                     </a>
                 </li>
                 <li class="menu-item">
                     <a class="menu-link" href="/admin/offer"> <!-- Placeholder link for orders -->
-                        <i class="icon material-icons md-local_shipping"></i>
+                        <i class="icon material-icons md-shopping_bag"></i>
                         <span class="text">Offers</span>
                     </a>
                 </li>
                 <li class="menu-item">
                     <a class="menu-link" href="/admin/adminsales"> <!-- Placeholder link for orders -->
-                        <i class="icon material-icons md-local_shipping"></i>
+                        <i class="icon material-icons md-store"></i>
                         <span class="text">Sales Report</span>
                     </a>
+                   
                 </li>
             </ul>
         </nav>
+
+
+        
     </aside>
     
     <main class="main-wrap">
@@ -173,15 +183,21 @@
                             <% order.forEach(function(order) { %>
                                 <tr>
                                     <td><b><%= order.oId %></b></td>
-                                    <td><%= order.orderDate %></td>
+                                    <td><%= new Date(order.orderDate).toDateString().slice(4, 15) %></td>
+
                                     <td><%= order.user.email %></td>
                                     <% if (order.coupon !== "nil") { %>
                                         <td><%= order.coupon %></td>
-                                        <td class="alert-warning"><%= order.discount %> % discount Applied</td>
+                                       
                                     <% } else { %>
                                         <td>No Coupon Applied</td>
+                                       
+                                    <% }if( order.discountPrice===0) {%>
                                         <td>No discount Applied</td>
-                                    <% } %>
+                                        <%}else{%>
+                                        <td class="alert-warning"><%= order.discountPrice%>  %discount Applied</td>
+                                        <%}%>
+
                                     <td>₹ <%= order.billTotal %></td>
                                     <td class="text-end">
                                         <div class="icontext">
@@ -198,6 +214,38 @@
                     </tbody>
                 </table>
             </div>
+
+  <!-- Start Pagination -->
+  <div class="page-pagination text-center" data-aos="fade-up" data-aos-delay="6">
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            <li class="page-item active" aria-current="page">
+                <a class="page-link" href="adminsales?page=1">1</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="adminsales?page=2">2</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="adminsales?page=3">3</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="adminsales?page=4"><i class="ion-ios-skipforward"></i></a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
         </section>
 
         <footer class="main-footer text-center">
