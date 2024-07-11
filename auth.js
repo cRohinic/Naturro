@@ -3,6 +3,8 @@
 
 const passport = require('passport');
 const { loginload } = require('./controller/userController');
+const bcrypt=require('bcrypt')
+
 require('dotenv').config()
 
 //Google signup
