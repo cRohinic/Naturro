@@ -900,7 +900,7 @@ const newArrivals=async(req,res)=>{
     .limit(perPage) .sort({ createdAt: -1 })
     .limit(5) ;
     }
-    res.render('newArrivals', { product, wish, totalPage, page, wish, cart,sort });
+    res.render('newarrivals', { product, wish, totalPage, page, wish, cart,sort });
     
     }
     catch(error){
