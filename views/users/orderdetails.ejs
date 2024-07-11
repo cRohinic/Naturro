@@ -733,13 +733,14 @@
                 </ul>
                 
                 <hr>
-                      <a  href="/pdf?id=<%=order._id%>" class="btn btn btn-primary" download="Invoice.pdf">Download Invoice</a>
+                     
                 <a href="/userProfile" class="btn btn-warning" data-abc="true"> <i class="fa fa-chevron-left"></i> Back to Orders</a>
                 <% if(order.status == 'Canceled'){%>
                     <button class="btn btn-warning" onclick="cancelOrder('<%= order.oId %>')" data-abc="true" hidden>
                         <i class="fa fa-chevron-left"></i> Cancel Order
                     </button>
                     <%}else if(order.status=="Delivered"){%>
+                        <a  href="/pdf?id=<%=order._id%>" class="btn btn btn-primary" download="Invoice.pdf">Download Invoice</a>
                         <button class="btn btn-warning"  data-abc="true">
                             <i class="fa fa-chevron-left"></i>Delivered
                         </button>

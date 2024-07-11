@@ -207,8 +207,8 @@ try{
        let orders = await orderModel.find({ user: req.session.user}).skip(perPage * (page-1)).limit(perPage).sort({_id:-1})
        || [];
        const user = await User.findById(req.session.user);
-        let wallet = await walletModel.findOne({user:req.session.user}) || null;
-       
+       const wallet = await walletModel.findOne({ user: req.session.user }) || null;
+    //    wallet.transactions.reverse()
      console.log('///////////',orders);
         res.render('userProfile', { user,address,orders,wallet});
 

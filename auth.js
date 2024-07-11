@@ -9,9 +9,9 @@ require('dotenv').config()
 
 var GoogleStrategy = require('passport-google-oauth2').Strategy;
 passport.use(new GoogleStrategy({
-  clientID:'574667909467-6sffbjo2m8ju2e6gb10i55uhs8rp4re8.apps.googleusercontent.com',
-  clientSecret:'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',
-  callbackURL: "http://localhost:3040/authentication/google/callback",
+  clientID:'818271103699-cblimt996dfr0lqt10k00lcdt49vj12h.apps.googleusercontent.com ',
+  clientSecret:'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',
+  callbackURL: "https://localhost:3040/google/callback",
   passReqToCallback:true
 },
     function (request, accessToken, refreshToken, profile, done) {

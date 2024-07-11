@@ -5,7 +5,7 @@ const addressModel = require("../models/addressModel");
  const orderModel = require("../models/orderModel")
 const randomstring = require("randomstring");
 const razorpay=require('razorpay')
-
+const Wallet = require('../models/walletModel');
 var instance = new razorpay({
     key_id: 'rzp_test_V59oBpkY2QETZI',
     key_secret: 'GtMFeNLoY2TwkFdis5LoaQFz',
@@ -45,6 +45,7 @@ const loadcheckout =async(req,res)=>{
         if (!paymentOption) {
             return res.status(400);
         }
+        
         if (!address) {
             return res.status(400);
         }
@@ -54,7 +55,31 @@ const loadcheckout =async(req,res)=>{
         if (!cart) {
             return res.status(400).json({ message: "Cart not found" });
         }
-
+        if (paymentOption === 'wallet') {
+            
+                const wallet = await Wallet.findOne({ user:user._id });
+        
+                if (!wallet) {
+                    return res.status(404).json({ message: 'Wallet not found' });
+                }
+        
+                if (wallet.balance < cart.billTotal) {
+                    console.log('Insufficient balance');
+                    return res.status(400).json({ message: 'Wallet does not have enough money' });
+                }
+        
+                wallet.balance -= cart.billTotal;
+                wallet.transactions.push({
+                    amount: cart.billTotal,
+                    type: 'debit',
+                    reason: 'order using wallet'
+                });
+                await wallet.save();
+        
+        
+        
+        }
+        
         const OrderAddress = await addressModel.findOne({ user: user._id });
         if (!OrderAddress) {
             return res.status(400).json({ message: "Address not found" });

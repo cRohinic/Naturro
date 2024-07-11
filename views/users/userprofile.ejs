@@ -857,6 +857,7 @@
                                                             <th>Date</th>
                                                             <th>Time</th>
                                                             <th>Amount</th>
+
                                                             <th>reason</th>
                                                         </tr>
                                                     </thead>
@@ -871,6 +872,7 @@
                                                             <td>
                                                                 <%= transaction.type === 'credit' ? '+' : '-' %>INR <%= transaction.amount %>
                                                             </td>
+                                                             
                                                             <td>
                                                                 <%= transaction.reason%>
     
