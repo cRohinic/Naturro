@@ -210,7 +210,7 @@ try{
        const wallet = await walletModel.findOne({ user: req.session.user }) || null;
     //    wallet.transactions.reverse()
      console.log('///////////',orders);
-        res.render('userProfile', { user,address,orders,wallet});
+        res.render('userprofile', { user,address,orders,wallet});
 
 }catch(error){
 
