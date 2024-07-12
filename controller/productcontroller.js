@@ -166,7 +166,7 @@ const addProduct = async (req, res) => {
 
             const cateData =  await categoryModel.find({});
 
-            res.render("editProduct",{cateData, proData});
+            res.render("editproduct",{cateData, proData});
         }catch(error){
             console.log(error.message);
             res.status(500).send('Internal Server is Error');
