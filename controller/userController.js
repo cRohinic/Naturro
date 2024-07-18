@@ -207,8 +207,9 @@ try{
        let orders = await orderModel.find({ user: req.session.user}).skip(perPage * (page-1)).limit(perPage).sort({_id:-1})
        || [];
        const user = await User.findById(req.session.user);
-       const wallet = await walletModel.findOne({ user: req.session.user }) || null;
-    //    wallet.transactions.reverse()
+       const wallet = await walletModel.findOne({ user: req.session.user }) .skip(perPage * (page-1)).limit(perPage).sort({_id:-1});
+       
+       
      console.log('///////////',orders);
         res.render('userprofile', { user,address,orders,wallet});
 
@@ -762,6 +763,7 @@ const addToWallet=async(req,res)=>{
   
    
     const amount = Number(req.body.amount);
+    
     if (!amount) {
       return res.status(400).json({
         success: false,

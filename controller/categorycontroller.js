@@ -80,13 +80,14 @@ const updateCate = async(req,res)=>{
     try{
         console.log(req.query.id,req.body.name,req.body.description);
         await categoryModel.findByIdAndUpdate({_id:req.query.id},{$set:{name:req.body.name,description:req.body.description}});
-      
+        
             res.redirect('/admin/category');
     }
     catch(error){
         console.log(error.message);
     }
 };
+
 
 
 const deleteCate = async(req,res)=>{

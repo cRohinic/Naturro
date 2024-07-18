@@ -7,7 +7,7 @@ const productModel=require('../models/productModel');
 const walletModel= require('../models/walletModel');
 const userModel = require("../models/userModel");
 const ProductModel = require("../models/productModel");
-
+const PDFDocument = require('pdfkit');
 
 
 const loadLogin = async (req, res) => {
@@ -512,10 +512,14 @@ const unblockUser = async (req, res) => {
 
 const loadCategory = async(req,res)=>{
     try{
-        const category = await categoryModel.find({});
-        console.log(category);
-
-        res.render('category',{category});
+        
+         const perPage=3;
+            const page = parseInt(req.query.page) || 1;
+            const totalcate= await categoryModel.countDocuments({});
+            const totalPage=Math.ceil(totalcate/ perPage);
+       
+        const category = await categoryModel.find({}).skip(perPage * (page-1)).limit(perPage);
+        res.render('category',{category})
     }catch(error){
         console.log(error.message);
     }
@@ -767,6 +771,30 @@ const loadorderdetails = async(req,res)=>{
     }
 }
 
+const categoryoffer=async(req,res)=>{
+  try {
+      const id = req.query.id;
+      const products = await productModel.find({ category: id });
+  
+      const updateProductPromises = products.map(async (product) => {
+          product.discountPrice = 0;
+          product.offerTime = null;
+          return product.save();
+      });
+  
+      await Promise.all(updateProductPromises);
+  
+      await categoryModel.findByIdAndUpdate(id, {
+          $unset: { offerTime: "" ,discountPrice:"" }
+      });
+  
+      res.redirect('/admin/offer');
+  } catch (error) {
+      console.log('Error ending category offer:', error.message);
+  }
+  
+
+}
 
 
 
@@ -778,7 +806,7 @@ const loadsales = async(req,res)=>{
             const page = parseInt(req.query.page) || 1;
             const totalproducts= await ProductModel.countDocuments({});
             const totalPage=Math.ceil(totalproducts / perPage);
-    const order=await orderModel.find({status: "Delivered"}).populate('user').skip(perPage * (page -1)).limit(perPage).sort({_id:-1});
+    const order=await orderModel.find({status: "Delivered"}).populate('user').skip(perPage * (page-1)).limit(perPage).sort({_id:-1});
     console.log(order)
     res.render('adminsales',{order:order.reverse()});
     }
@@ -787,48 +815,91 @@ const loadsales = async(req,res)=>{
     }
     }
     
-    const formatDateToYYYYMMDD = (date) => {
-      const day = String(date.getDate()).padStart(2, '0');
-      const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-      const year = date.getFullYear();
-      return `${day}/${month}/${year}`;
-    };
+
     
-    const formatDateToDDMMYYYY = (date) => {
-      const day = String(date.getDate()).padStart(2, '0');
-      const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-      const year = date.getFullYear();
-      return `${day}/${month}/${year}`;
-    };
+
     
+
+    
+    // const formatDateToDDMMYYYY = (date) => {
+    //   const day = String(date.getDate()).padStart(2, '0');
+    //   const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based, so add 1
+    //   const year = date.getFullYear();
+    //   return `${day}/${month}/${year}`;
+    // };
+    
+    
+    // const dateFilter = async (req, res) => {
+    //   try {
+    //     const date = req.query.value;
+    //     const date2 = req.query.value1;
+    
+    //     // Parse the dates from query parameters
+    //     const [year, month, day] = date.split('-').map(Number);
+    //     const [year1, month1, day1] = date2.split('-').map(Number);
+    
+    //     // Construct Date objects
+    //     const rotatedDate = new Date(year, month - 1, day); // YYYY, MM (0-based), DD
+    //     const rotatedDate1 = new Date(year1, month1 - 1, day1); // YYYY, MM (0-based), DD
+    
+    //     // Ensure times are at the beginning and end of the day for correct range query
+    //     rotatedDate.setHours(0, 0, 0, 0);
+    //     rotatedDate1.setHours(23, 59, 59, 999);
+    
+    //     // Fetch orders within the date range
+    //     const order = await orderModel.find({
+    //       status: { $in: ["Delivered"] },
+    //       orderDate: {
+    //         $gte: rotatedDate,
+    //         $lte: rotatedDate1
+    //       }
+    //     }).sort({ _id: -1 });
+    
+    //     // Format order dates for display
+    //     const formattedOrders = order.map(order => ({
+    //       ...order._doc, // Spread the existing fields of the order
+    //       orderDate: formatDateToDDMMYYYY(new Date(order.orderDate))
+    //     }));
+    
+    //     console.log(formattedOrders);
+    
+    //     // Render with formatted orders
+    //     res.render("adminsales", { order: formattedOrders });
+    //   } catch (error) {
+    //     console.log(error.message);
+    //     res.status(500).send("Internal Server Error");
+    //   }
+    // };
     const dateFilter = async (req, res) => {
       try {
+        console.log('hi');
         const date = req.query.value;
         const date2 = req.query.value1;
     
-        // Parse the dates from query parameters
-        const [year, month, day] = date.split('-').map(Number);
-        const [year1, month1, day1] = date2.split('-').map(Number);
+        const [day, month, year] = date.split('-').map(Number); // Corrected to match DD-MM-YYYY format
+        const [day1, month1, year1] = date2.split('-').map(Number); // Corrected to match DD-MM-YYYY format
     
-        // Construct Date objects
-        const rotatedDate = new Date(year, month - 1, day); // YYYY, MM (0-based), DD
-        const rotatedDate1 = new Date(year1, month1 - 1, day1); // YYYY, MM (0-based), DD
+        console.log([year, month, day], [year1, month1, day1]);
+    
+        const startDate = new Date(year, month - 1, day); // Corrected month indexing
+        const endDate = new Date(year1, month1 - 1, day1); // Corrected month indexing
     
         // Ensure times are at the beginning and end of the day for correct range query
-        rotatedDate.setHours(0, 0, 0, 0);
-        rotatedDate1.setHours(23, 59, 59, 999);
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(23, 59, 59, 999);
+        console.log(startDate, endDate);
     
         // Fetch orders within the date range
-        const order = await orderModel.find({
+        const orders = await orderModel.find({
           status: { $in: ["Delivered"] },
           orderDate: {
-            $gte: rotatedDate,
-            $lte: rotatedDate1
+            $gte: startDate,
+            $lte: endDate
           }
         }).sort({ _id: -1 });
     
         // Format order dates for display
-        const formattedOrders = order.map(order => ({
+        const formattedOrders = orders.map(order => ({
           ...order._doc, // Spread the existing fields of the order
           orderDate: formatDateToDDMMYYYY(new Date(order.orderDate))
         }));
@@ -842,6 +913,93 @@ const loadsales = async(req,res)=>{
         res.status(500).send("Internal Server Error");
       }
     };
+    
+    // Helper function to format date to DD-MM-YYYY
+    function formatDateToDDMMYYYY(date) {
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0'); // getMonth() is zero-based
+      const year = date.getFullYear();
+      return `${day}-${month}-${year}`;
+    }
+    
+    
+    const filterData = async (req, res) => {
+      try {
+        const filterData = req.body;
+        console.log(filterData);
+    
+        let date;
+        const currentDate = new Date();
+        let order = [];
+    
+        if (filterData.type === 'today') {
+          date = 1;
+        } else if (filterData.type === 'week') {
+          date = 7;
+        } else if (filterData.type === 'custom') {
+          const endDate = new Date(filterData.endDate);
+          const startDate = new Date(filterData.startDate);
+    
+          const differenceMs = endDate.getTime() - startDate.getTime();
+          const differenceDays = differenceMs / (1000 * 3600 * 24);
+          date = Math.round(differenceDays);
+    
+          console.log(date);
+    
+          for (let i = 0; i <= date; i++) {
+            const start = new Date(startDate);
+            start.setDate(start.getDate() + i);
+            start.setHours(0, 0, 0, 0);
+    
+            const end = new Date(start);
+            end.setHours(23, 59, 59, 999);
+    
+            const dailyOrders = await orderModel.find({
+              status: "Delivered",
+              orderDate: {
+                $gte: start,
+                $lt: end,
+              },
+            }).populate('user');
+    
+            order = [...order, ...dailyOrders];
+          }
+    
+          return res.json({ success: true, message: 'Filter data received successfully', order });
+        } else {
+          date = 30;
+        }
+    
+        for (let i = 0; i < date; i++) {
+          const start = new Date(currentDate);
+          start.setDate(currentDate.getDate() - i);
+          start.setHours(0, 0, 0, 0);
+    
+          const end = new Date(currentDate);
+          end.setDate(currentDate.getDate() - i);
+          end.setHours(23, 59, 59, 999);
+    
+          const dailyOrders = await orderModel.find({
+            status: "Delivered",
+            orderDate: {
+              $gte: start,
+              $lt: end,
+            },
+          }).populate('user');
+    
+          order = [...order, ...dailyOrders];
+        }
+    
+        res.json({ success: true, message: 'Filter data received successfully', order });
+      } catch (error) {
+        console.log('filter data', error.message);
+        res.status(500).json({ success: false, message: 'Server error', error: error.message });
+      }
+    }
+    
+
+
+
     
       const sortDate = async (req, res) => {
         try {
@@ -945,6 +1103,59 @@ const loadsales = async(req,res)=>{
               res.status(500).send('Error generating PDF.');
           }
       };
+
+
+      const getMonthsInYear = (currentMonth) => {
+    let months = [];
+    for (let month = 0; month <= currentMonth; month++) {
+        months.push({ month, year: new Date().getFullYear() });
+    }
+    return months;
+};
+
+
+
+
+const getWeeksInMonth = (currentDate) => {
+  const month = currentDate.getMonth();
+  const year = currentDate.getFullYear();
+  const weeks = [];
+  const firstDate = new Date(year, month, 1);
+  const numDays = currentDate.getDate();
+
+  let start = 1;
+  let end = 7 - currentDate.getDay();
+
+  while (start <= numDays) {
+      if (end > numDays) {
+          end = numDays;
+      }
+
+      weeks.push({ start: new Date(year, month, start), end: new Date(year, month, end) });
+
+      start = end + 1;
+
+      // Calculate new end based on the new start
+      end = start + 6;
+
+      // If end exceeds the number of days in the month, set it to the last day of the month
+      if (end > numDays) {
+          end = numDays;
+      }
+  }
+
+
+  return weeks;
+};
+
+
+
+function getMonthName(month) {
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'];
+  return monthNames[month];
+}
+
       
       const generatePDF = (salesData, title, res) => {
           try {
@@ -1081,7 +1292,9 @@ module.exports = {
     sortDate ,
     generatePDF,
     pdf,
-    generateExcel
+    generateExcel,
+    categoryoffer,
+    filterData
    
 
     

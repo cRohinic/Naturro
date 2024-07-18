@@ -11,7 +11,7 @@ const fs = require('fs');
 const loadProduct = async(req,res)=>{
     try{
         let product=await ProductModel.find({list:true})
-        const perPage=10;
+        const perPage=5;
             const page = parseInt(req.query.page) || 1;
             const totalproducts= await ProductModel.countDocuments({});
             const totalPage=Math.ceil(totalproducts / perPage);

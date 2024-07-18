@@ -569,7 +569,9 @@
                                                 <div class="py-2">
                                                     <span class="d-block text-muted">Order Date</span>
                                                     <!-- <span><%= order.orderDate %></span> -->
-                                                    <td><%= new Date(order.orderDate).toDateString().slice(4, 15) %></td>
+                                                    <h6>Order Date:<%= new Date(order.orderDate).toLocaleDateString()  %></h6>
+                                           
+                                                        
                                                 </div>
                                             <% } else { %>
                                                 <div>Order information is not available.</div>

@@ -215,7 +215,7 @@
                                 </div>
                                 
                                                   <!-- Category Section -->
-                                                  <div class="mb-4">
+                                                  <!-- <div class="mb-4">
                                                     <label for="category-dropdown">Category:</label>
                                                     <select class="form-select" id="category-dropdown" name="category">
                                                         <option value="">Select a category</option>
@@ -225,10 +225,59 @@
                                                             <% }
                                                         } %>
                                                     </select>
-                                                    <div id="categoryError" class="text-danger"></div> <!-- Placeholder for category error -->
+                                                    <div id="categoryError" class="text-danger"></div> 
                                                 </div>                              
-                              
+                               -->
 
+
+<!-- Category Section -->
+<!-- <div class="mb-4">
+    <label for="category-dropdown">Category:</label>
+    <select class="form-select" id="category-dropdown" name="category">
+        <option value="">Select a category</option>
+        <% if (cateData && cateData.length > 0) { 
+            const selectedCategory = (typeof selectedCategoryId !== 'undefined') ? selectedCategoryId : ''; 
+            cateData.forEach(category => { 
+                const isSelected = (category._id === selectedCategory) ? 'selected' : ''; 
+        %>
+                <option value="<%= category._id %>" <%= isSelected %>><%= category.name %></option>
+        <% 
+            });
+        } %>
+    </select>
+    <div id="categoryError" class="text-danger"></div> 
+</div> -->
+<div class="mb-4">
+    <label for="category-dropdown">Category:</label>
+   
+        <% if(cateData.length > 0) { %>
+            <select class="form-select" name="category" required>
+                <% for(let i=0; i<cateData.length; i++) { %>
+                    <% if(proData.category.name === cateData[i].name) { %>
+                        <option value="<%= cateData[i]._id %>" selected><%= cateData[i].name %></option>
+                    <% } else { %>
+                        <option value="<%= cateData[i]._id %>"><%= cateData[i].name %></option>
+                    <% } %>
+                <% } %>
+            </select>
+         <% } %>
+    
+    <div id="categoryError" class="text-danger"></div> 
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                               
 <!-- Media Section for Images -->
 <div class="mb-4">
     <label for="product_images" class="form-label">Images</label>

@@ -6,7 +6,12 @@ const {logout}= require('./admincontroller');
 
 const listCoupons = async (req, res) => {
     try {
-        const coupons = await couponModel.find({});
+        
+        const perPage=3;
+            const page = parseInt(req.query.page) || 1;
+            const totalcoupon= await couponModel.countDocuments({});
+            const totalPage=Math.ceil(totalcoupon/ perPage);
+            const coupons = await couponModel.find({}).skip(perPage * (page-1)).limit(perPage);
        res.render('couponlist',{coupons})
     } catch (error) {
         console.error("Error listing coupons:", error.message);
@@ -18,6 +23,7 @@ const listCoupons = async (req, res) => {
 
 const loadcreatecoupon = async(req,res)=>{
     try{
+     
        res.render('createCoupon');
     }catch(error){
       console.log(error.message);

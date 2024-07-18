@@ -71,8 +71,10 @@ admin_route.post('/updateorderstatus',auth.isLogin,adminController.updateorder);
 
 admin_route.get("/adminsales",auth.isLogin,adminController. loadsales)
 admin_route.get("/salesDate",auth.isLogin,adminController.dateFilter)
-
+admin_route.post('/filterData',adminController.filterData);
 admin_route.get('/offer',auth.isLogin,adminController.offer);
+
+admin_route.post('/categoryoffer',auth.isLogin,adminController.categoryoffer);
 admin_route.get("/date",auth.isLogin,adminController.sortDate)
 
 admin_route.get('/pdf',auth.isLogin,adminController.pdf);
