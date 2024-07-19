@@ -24,7 +24,7 @@ const listCoupons = async (req, res) => {
 const loadcreatecoupon = async(req,res)=>{
     try{
      
-       res.render('createCoupon');
+       res.render('createcoupon');
     }catch(error){
       console.log(error.message);
     }
