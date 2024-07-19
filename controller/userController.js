@@ -375,7 +375,7 @@ const loadeditAddress =async(req,res)=>{
   
   if (address) {
      
-      res.render('editAddress', { addresses: address });
+      res.render('editaddress', { addresses: address });
   
   } else {
       
