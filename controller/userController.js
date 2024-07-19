@@ -440,7 +440,7 @@ const loadeditAddress =async(req,res)=>{
         
 
         // Render the editAddress template with the updated addresses
-        return res.render('userProfile', { address:addresses, message: 'Updated successfully!' ,user,orders});
+        return res.redirect('/userProfilers');
     } catch (err) {
         console.error('editAddress:', err.message);
         // Handle errors

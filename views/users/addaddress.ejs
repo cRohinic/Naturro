@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zxx">
 
@@ -11,7 +12,40 @@
 
     <!-- ::::::::::::::Favicon icon::::::::::::::-->
     <link rel="shortcut icon" href="assets/images/favicon.ico" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
+    <style>
+        @media (min-width: 1200px) {
+    body .container {
+        max-width: 1340px; 
+    }
+}
+
+#searchResultsCollapse {
+    position: absolute;
+    top: 70%; 
+    right: 5;
+    z-index: 1000; 
+    width: 300px;
+    max-height: 500px; 
+    overflow-y: auto; 
+    background-color: #fff;
+    border: 1px solid rgba(0,0,0,.15);
+    border-radius: .25rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+    display: none; 
+     
+}
+
+#searchResult{
+    z-index: 1001;
+   
+}
+#searchResultsCollapse.show {
+    display: block; 
+}
+
+    </style>
     <!-- ::::::::::::::All CSS Files here :::::::::::::: -->
     <!-- Vendor CSS -->
     <!-- <link rel="stylesheet" href="assets/css/vendor/font-awesome.min.css">
@@ -48,17 +82,17 @@
                             <!-- Start Header Logo -->
                             <div class="header-logo">
                                 <div class="logo">
-                                    <a href="index.html"><img src="assets/images/logo/logo_black.png" alt=""></a>
+                                    <a href="index.html"><img src="assets\images\carosal\logo.jpg" alt=""></a>
                                 </div>
                             </div>
                             <!-- End Header Logo -->
 
                             <!-- Start Header Main Menu -->
-                            <div class="main-menu menu-color--black menu-hover-color--aqua">
+                            <div class="main-menu main-menu-style-4 menu-color--white menu-hover-color--aqua" style="background-color: #b19361;">
                                 <nav>
                                     <ul>
                                         <li class="has-dropdown">
-                                            <a class="active main-menu-link" href="/home">Home <i
+                                            <a class="active main-menu-link" href="home">Home <i
                                                     class="fa fa-angle-down"></i></a>
                                             <!-- Sub Menu -->
                                             <!-- <ul class="sub-menu">
@@ -72,6 +106,7 @@
                                             <a href="shop">Shop <i
                                                     class="fa fa-angle-down"></i></a>
                                             <!-- Mega Menu -->
+                                            
                                         </li>
                                         <li class="has-dropdown has-megaitem">
                                             <a href="/shop?category=men">Men </a> 
@@ -79,52 +114,86 @@
                                         <li class="has-dropdown has-megaitem">
                                             <a href="/shop?category=women">Women </a> 
                                         </li>
-                                           
+                                        <!-- <li class="has-dropdown">
+                                            <a href="">Blog <i
+                                                    class="fa fa-angle-down"></i></a> -->
+                                            <!-- Sub Menu -->
+                                            <!-- <ul class="sub-menu"> -->
+                                                <!-- <li><a href="blog-grid-sidebar-left.html">Blog Grid Sidebar left</a>
+                                                </li>
+                                                <li><a href="blog-grid-sidebar-right.html">Blog Grid Sidebar Right</a>
+                                                </li>
+                                                <li><a href="blog-full-width.html">Blog Full Width</a></li>
+                                                <li><a href="blog-list-sidebar-left.html">Blog List Sidebar Left</a>
+                                                </li>
+                                                <li><a href="blog-list-sidebar-right.html">Blog List Sidebar Right</a>
+                                                </li>
+                                                <li><a href="blog-single-sidebar-left.html">Blog Single Sidebar left</a>
+                                                </li>
+                                                <li><a href="blog-single-sidebar-right.html">Blog Single Sidebar
+                                                        Right</a></li> -->
+                                            <!-- </ul> -->
                                         </li>
-                                        <li class="has-dropdown">
-                                            <a href="">Pages <i class="fa fa-angle-down"></i></a>
-                                           
-                                        </li>
+                                        <!-- <li class="has-dropdown">
+                                            <a href="#"> <i class="fa fa-angle-down"></i></a> -->
+                                            <!-- Sub Menu -->
+                                            <!-- <ul class="sub-menu">
+                                                <li><a href="faq.html">Frequently Questions</a></li>
+                                                <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                                                <li><a href="404.html">404 Page</a></li>
+                                            </ul> -->
+                                        <!-- </li> -->
                                         <li>
                                             <a href="/logout">Logout</a>
                                         </li>
-                                        
+                                        <!-- <li>
+                                            <a href="contact-us.html">Contact Us</a>
+                                        </li> -->
                                     </ul>
                                 </nav>
                             </div>
                             <!-- End Header Main Menu Start -->
 
-                                                        <!-- Start Header Action Link -->
-                                                        <ul class="header-action-link action-color--black action-hover-color--aqua">
-                                                            <li>
-                                                                <a href="#offcanvas-wishlish" class="offcanvas-toggle">
-                                                                    <i class="icon-heart"></i>
-                                                                    <span class="item-count">3</span>
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="#offcanvas-add-cart" class="offcanvas-toggle">
-                                                                    <i class="icon-bag"></i>
-                                                                    <span class="item-count">3</span>
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="#search">
-                                                                    <i class="icon-magnifier"></i>
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="userprofile">
-                                                                    <i class="icon-user"></i>
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="#offcanvas-about" class="offacnvas offside-about offcanvas-toggle">
-                                                                    <i class="icon-menu"></i>
-                                                                </a>
-                                                            </li>
-                                                        </ul>
-                                                        <!-- End Header Action Link -->
+                            <!-- Start Header Action Link -->
+                            <ul class="header-action-link action-color--black action-hover-color--aqua">
+                                <li>
+                                    <input class="form-control mr-sm-2" type="search" placeholder="Search" id="search" oninput="searchproduct()" aria-label="Search">
+                                    
+                                    
+                                    <div class="collapse" id="searchResultsCollapse">
+                            
+                                           
+                                            <div id="searchResult" class="card">
+
+                                            </div>
+                                        
+                                    </div>
+                                </li>
+                                <li>
+                                    <a href="#offcanvas-wishlish" class="offcanvas-toggle">
+                                        <i class="icon-heart"></i>
+                                        <!-- <span class="item-count">3</span> -->
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="cart" >
+                                        <i class="icon-bag"></i>
+                                        <!-- <span class="item-count">3</span> -->
+                                    </a>
+                                </li>
+                                
+                                <li>
+                                    <a href="/userprofile">
+                                        <i class="icon-user"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#offcanvas-about" class="offacnvas offside-about offcanvas-toggle">
+                                        <i class="icon-menu"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                            <!-- End Header Action Link -->
                         </div>
                     </div>
                 </div>
@@ -144,7 +213,7 @@
                             <li>
                                 <a href="index.html">
                                     <div class="logo">
-                                        <img src="assets/images/logo/logo_black.png" alt="">
+                                        <img src="assets\images\carosal\logo.jpg" alt="">
                                     </div>
                                 </a>
                             </li>
@@ -154,26 +223,31 @@
 
                     <!-- Start Mobile Right Side -->
                     <div class="mobile-right-side">
-                        <ul class="header-action-link action-color--black action-hover-color--golden">
+                        <ul class="header-action-link action-color--black action-hover-color--aqua">
+                            <li>
+                                <a href="#offcanvas-wishlish" class="offcanvas-toggle">
+                                    <i class="icon-heart"></i>
+                                    <!-- <span class="item-count">3</span> -->
+                                </a>
+                            </li>
+                            <li>
+                                <a href="cart" >
+                                    <i class="icon-bag"></i>
+                                    <!-- <span class="item-count">3</span> -->
+                                </a>
+                            </li>
                             <li>
                                 <a href="#search">
                                     <i class="icon-magnifier"></i>
                                 </a>
                             </li>
                             <li>
-                                <a href="#offcanvas-wishlish" class="offcanvas-toggle">
-                                    <i class="icon-heart"></i>
-                                    <span class="item-count">3</span>
+                                <a href="/userprofile">
+                                    <i class="icon-user"></i>
                                 </a>
                             </li>
                             <li>
-                                <a href="#offcanvas-add-cart" class="offcanvas-toggle">
-                                    <i class="icon-bag"></i>
-                                    <span class="item-count">3</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#mobile-menu-offcanvas" class="offcanvas-toggle offside-menu">
+                                <a href="#offcanvas-about" class="offacnvas offside-about offcanvas-toggle">
                                     <i class="icon-menu"></i>
                                 </a>
                             </li>
@@ -256,8 +330,46 @@
                             </ul>
                         </li>
                         <li>
-                          
-        <!-- End Mobile Menu Nav -->
+                            <a href="#"><span>Blogs</span></a>
+                            <ul class="mobile-sub-menu">
+                                <li>
+                                    <a href="#">Blog Grid</a>
+                                    <ul class="mobile-sub-menu">
+                                        <li><a href="blog-grid-sidebar-left.html">Blog Grid Sidebar left</a></li>
+                                        <li><a href="blog-grid-sidebar-right.html">Blog Grid Sidebar Right</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <a href="blog-full-width.html">Blog Full Width</a>
+                                </li>
+                                <li>
+                                    <a href="#">Blog List</a>
+                                    <ul class="mobile-sub-menu">
+                                        <li><a href="blog-list-sidebar-left.html">Blog List Sidebar left</a></li>
+                                        <li><a href="blog-list-sidebar-right.html">Blog List Sidebar Right</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <a href="#">Blog Single</a>
+                                    <ul class="mobile-sub-menu">
+                                        <li><a href="blog-single-sidebar-left.html">Blog Single Sidebar left</a></li>
+                                        <li><a href="blog-single-sidebar-right.html">Blog Single Sidebar Right</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="#"><span>Pages</span></a>
+                            <ul class="mobile-sub-menu">
+                                <li><a href="faq.html">Frequently Questions</a></li>
+                                <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                                <li><a href="404.html">404 Page</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="about-us.html">About Us</a></li>
+                        <li><a href="contact-us.html">Contact Us</a></li>
+                    </ul>
+                </div> <!-- End Mobile Menu Nav -->
             </div> <!-- End Mobile Menu -->
 
             <!-- Start Mobile contact Info -->
@@ -477,220 +589,117 @@
     </div> <!-- End Offcanvas Mobile Menu Section -->
 
     <!-- Start Offcanvas Search Bar Section -->
-    <div id="search" class="search-modal">
+    <!-- <div id="search" class="search-modal">
         <button type="button" class="close">×</button>
         <form>
             <input type="search" placeholder="type keyword(s) here" />
             <button type="submit" class="btn btn-lg btn-golden">Search</button>
         </form>
-    </div>
+    </div> -->
+
+
+   
+
     <!-- End Offcanvas Search Bar Section -->
 
     <!-- Offcanvas Overlay -->
     <div class="offcanvas-overlay"></div>
 
-    <!-- ...:::: Start Breadcrumb Section:::... -->
-    <div class="breadcrumb-section breadcrumb-bg-color--golden" style="background-image: url('assets/images/carosal/cover.webp');">
-        <div class="breadcrumb-wrapper">
-            <div class="container">
-                <div class="row">
-                    <div class="col-12">
-                        <h3 class="breadcrumb-title" style="color: #607D3B;">Add Address</h3>
-                        <div class="breadcrumb-nav breadcrumb-nav-color--black breadcrumb-nav-hover-color--golden">
-                            <nav aria-label="breadcrumb">
-                                <ul>
-                                    <li><a href="/home" style="color: #607D3B;">Home</a></li>
-                                    <!-- <li><a href="" style="color: white;">Shop</a></li> -->
-                                    <li class="active" aria-current="page" style="color: #607D3B;">Add Address</li>
-                                </ul>
-                            </nav>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> <!-- ...:::: End Breadcrumb Section:::... -->
-
-    <!-- ...:::: Start Account Dashboard Section:::... -->
-    <div class="account-dashboard">
+   <!-- ...:::: Start Breadcrumb Section:::... -->
+   <div class="breadcrumb-section breadcrumb-bg-color--golden" style="background-image: url('assets/images/carosal/cover.webp');">
+    <div class="breadcrumb-wrapper">
         <div class="container">
             <div class="row">
-                <div class="col-sm-12 col-md-3 col-lg-3">
-                    <!-- Nav tabs -->
-                    <div class="dashboard_tab_button" data-aos="fade-up" data-aos-delay="0">
-                        <ul role="tablist" class="nav flex-column dashboard-list">
-                            <li><a href="#dashboard" data-bs-toggle="tab"
-                                    class="nav-link btn btn-block btn-md btn-black-default-hover active">Addresses</a>
-                            </li>
-                            <li> <a href="#orders" data-bs-toggle="tab"
-                                    class="nav-link btn btn-block btn-md btn-black-default-hover">Orders</a></li>
-                            <!-- <li><a href="#downloads" data-bs-toggle="tab"
-                                    class="nav-link btn btn-block btn-md btn-black-default-hover">Downloads</a></li> -->
-                            <li><a href="userprofile" data-bs-toggle="tab"
-                                    class="nav-link btn btn-block btn-md btn-black-default-hover">Accountdetails</a></li>
-                            <!-- <li><a href="#account-details" data-bs-toggle="tab"
-                                    class="nav-link btn btn-block btn-md btn-black-default-hover">Dashboard</a>
-                            </li> -->
-                            <!-- <li><a href="login.html"
-                                    class="nav-link btn btn-block btn-md btn-black-default-hover">logout</a></li> -->
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-sm-12 col-md-9 col-lg-9">
-                    <!-- Tab panes -->
-                    <div class="tab-content dashboard_content" data-aos="fade-up" data-aos-delay="200">
-                        <div class="tab-pane fade show active" id="dashboard">
-                            <form action="" method="post"  onsubmit="return validateForm(event)">
-                                <!-- Address Fields -->
-                                <div class="default-form-box mb-20">
-                                    <%if(typeof message!=='undefined'){%>
-                                        <p class="text-success"><%=message%></p>
-                                        <%}%>
-                                        <%if(typeof error!=='undefined'){%>
-                                            <p class="text-danger"><%=error%></p>
-                                            <%}%>
-                                    <label>Address Type</label>
-                                    <select name="addressType">
-                                        <option value="home">Home</option>
-                                        <option value="work">Work</option>
-                                        <option value="temp">Temporary</option>
-                                    </select>
-                                </div><br><br>
-                                <div class="default-form-box mb-20">
-                                    <label>House No</label>
-                                    <input type="text" name="houseNo" id="houseNo">
-                                    <p id="housenoError" class="text-danger"></p>
-                                </div>
-                                <div class="default-form-box mb-20">
-                                    <label>Street</label>
-                                    <input type="text" name="street" id="street">
-                                    <p id="streetError" class="text-danger"></p>
-                                </div>
-                                <div class="default-form-box mb-20">
-                                    <label>Landmark</label>
-                                    <input type="text" name="landmark" id="landmark">
-                                    <p id="landmarkError" class="text-danger"></p>
-                                </div>
-                                <div class="default-form-box mb-20">
-                                    <label>Pincode</label>
-                                    <input type="number" name="pincode" id="pincode">
-                                    <p id="pincodeError" class="text-danger"></p>
-                                </div>
-                                <div class="default-form-box mb-20">
-                                    <label>City</label>
-                                    <input type="text" name="city" id="city">
-                                    <p id="cityError" class="text-danger"></p>
-                                </div>
-                                <div class="default-form-box mb-20">
-                                    <label>District</label>
-                                    <input type="text" name="district" id="district">
-                                    <p id="districtError" class="text-danger"></p>
-                                </div>
-                                <div class="default-form-box mb-20">
-                                    <label>State</label>
-                                    <input type="text" name="state" id="state">
-                                    <p id="stateError" class="text-danger"></p>
-                                </div>
-                                <div class="default-form-box mb-20">
-                                    <label>Country</label>
-                                    <input type="text" name="country" id="country">
-                                    <p id="countryError" class="text-danger"></p>
-                                </div>
-                                <div class="save_button mt-3">
-                                    <p id="mainError" class="text-danger"></p>
-                                    <button class="btn btn-md btn-black-default-hover" type="submit">Add</button>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="tab-pane fade" id="orders">
-                            <h4>Orders</h4>
-                            <div class="table_page table-responsive">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Order</th>
-                                            <th>Date</th>
-                                            <th>Status</th>
-                                            <th>Total</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>May 10, 2018</td>
-                                            <td><span class="success">Completed</span></td>
-                                            <td>$25.00 for 1 item </td>
-                                            <td><a href="cart.html" class="view">view</a></td>
-                                        </tr>
-                                        <tr>
-                                            <td>2</td>
-                                            <td>May 10, 2018</td>
-                                            <td>Processing</td>
-                                            <td>$17.00 for 1 item </td>
-                                            <td><a href="cart.html" class="view">view</a></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="downloads">
-                            <h4>Downloads</h4>
-                            <div class="table_page table-responsive">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Product</th>
-                                            <th>Downloads</th>
-                                            <th>Expires</th>
-                                            <th>Download</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Shopnovilla - Free Real Estate PSD Template</td>
-                                            <td>May 10, 2018</td>
-                                            <td><span class="danger">Expired</span></td>
-                                            <td><a href="#" class="view">Click Here To Download Your File</a></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Organic - ecommerce html template</td>
-                                            <td>Sep 11, 2018</td>
-                                            <td>Never</td>
-                                            <td><a href="#" class="view">Click Here To Download Your File</a></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="tab-pane" id="address">
-                            <p>The following addresses will be used on the checkout page by default.</p>
-                            <h5 class="billing-address">Billing address</h5>
-                            <a href="#" class="view">Edit</a>
-                            <p><strong>Bobby Jackson</strong></p>
-                            <address>
-                                Address: Your address goes here.
-                            </address>
-                        </div>
-                        <div class="tab-pane fade" id="account-details">
-                            <h3>Account details </h3>
-                            <div class="login">
-                                <div class="login_form_container">
-                                    <div class="account_login_form">
-                                        <h4>Dashboard </h4>
-                            <p>From your account dashboard. you can easily check &amp; view your <a href="#">recent
-                                    orders</a>, manage your <a href="#">shipping and billing addresses</a> and <a
-                                    href="#">Edit your password and account details.</a></p>
-                                        
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <div class="col-12">
+                    <h3 class="breadcrumb-title" style="color: #607D3B;"><Address></Address></h3>
+                    <div class="breadcrumb-nav breadcrumb-nav-color--black breadcrumb-nav-hover-color--golden">
+                        <nav aria-label="breadcrumb">
+                            <ul>
+                                <li><a href="/home" style="color: #607D3B;">Home</a></li>
+                                <!-- <li><a href="" style="color: white;">Shop</a></li> -->
+                                <li class="active" aria-current="page" style="color: #607D3B;">address</li>
+                            </ul>
+                        </nav>
                     </div>
                 </div>
             </div>
         </div>
-    </div> <!-- ...:::: End Account Dashboard Section:::... -->
+    </div>
+</div> <!-- ...:::: End Breadcrumb Section:::... -->
+<div class="p-5">
+<form action="" method="post"  onsubmit="return validateForm(event)">
+    <!-- Address Fields -->
+    <div class="default-form-box mb-20">
+        <%if(typeof message!=='undefined'){%>
+            <p class="text-success"><%=message%></p>
+            <%}%>
+            <%if(typeof error!=='undefined'){%>
+                <p class="text-danger"><%=error%></p>
+                <%}%>
+        <label>Address Type</label>
+        <select name="addressType">
+            <option value="home">Home</option>
+            <option value="work">Work</option>
+            <option value="temp">Temporary</option>
+        </select>
+    </div><br><br>
+    <div class="default-form-box mb-20">
+        <label>House No</label>
+        <input type="text" name="houseNo" id="houseNo">
+        <p id="housenoError" class="text-danger"></p>
+    </div>
+    <div class="default-form-box mb-20">
+        <label>Street</label>
+        <input type="text" name="street" id="street">
+        <p id="streetError" class="text-danger"></p>
+    </div>
+    <div class="default-form-box mb-20">
+        <label>Landmark</label>
+        <input type="text" name="landmark" id="landmark">
+        <p id="landmarkError" class="text-danger"></p>
+    </div>
+    <div class="default-form-box mb-20">
+        <label>Pincode</label>
+        <input type="number" name="pincode" id="pincode">
+        <p id="pincodeError" class="text-danger"></p>
+    </div>
+    <div class="default-form-box mb-20">
+        <label>City</label>
+        <input type="text" name="city" id="city">
+        <p id="cityError" class="text-danger"></p>
+    </div>
+    <div class="default-form-box mb-20">
+        <label>District</label>
+        <input type="text" name="district" id="district">
+        <p id="districtError" class="text-danger"></p>
+    </div>
+    <div class="default-form-box mb-20">
+        <label>State</label>
+        <input type="text" name="state" id="state">
+        <p id="stateError" class="text-danger"></p>
+    </div>
+    <div class="default-form-box mb-20">
+        <label>Country</label>
+        <input type="text" name="country" id="country">
+        <p id="countryError" class="text-danger"></p>
+    </div>
+    <div class="save_button mt-3">
+        <p id="mainError" class="text-danger"></p>
+        <button class="btn btn-md btn-black-default-hover" type="submit">Add</button>
+    </div>
+</form>
+</div>
+
+
+
+
+
+
+
+                </div> <!-- End Shop Product Sorting Section  -->
+            </div>
+        </div>
+    </div> <!-- ...:::: End Shop Section:::... -->
 
     <!-- Start Footer Section -->
     <footer class="footer-section footer-bg section-top-gap-100">
@@ -730,17 +739,19 @@
                         </div>
                         <div class="col-lg-3 col-sm-6 mb-6">
                             <!-- Start Footer Single Item -->
+                        </div>
+                        <div class="col-lg-3 col-sm-6 mb-6">
+                           
                             <div class="footer-widget-single-item footer-widget-color--golden" data-aos="fade-up"
                                 data-aos-delay="400">
                                 <h5 class="title">CATEGORIES</h5>
                                 <ul class="footer-nav">
-                                    <li><a href="#">Decorative</a></li>
-                                    <li><a href="#">Kitchen utensils</a></li>
-                                    <li><a href="#">Chair & Bar stools</a></li>
-                                    <li><a href="#">Sofas and Armchairs</a></li>
-                                    <li><a href="#">Interior lighting</a></li>
+                                    <li><a href="/shop?category=men">MEN</a></li>
+                                    <li><a href="/shop?category=women">WOMEN</a></li>
                                 </ul>
                             </div>
+                          
+                        </div>
                             <!-- End Footer Single Item -->
                         </div>
                         <div class="col-lg-3 col-sm-6 mb-6">
@@ -1072,10 +1083,8 @@
 
     <!-- Main JS -->
     <script src="assets/js/main.js"></script>
-    <script src="/public/assets/js/main.js"></script>
-
-    <script>
-        function getElementValue(id) {
+    <script> 
+  function getElementValue(id) {
     const element = document.getElementById(id);
     return element.value;
 }
@@ -1137,7 +1146,11 @@ function validateForm(event) {
 }
 
 
-    </script>
+</script>
+
+    
 </body>
+
+
 
 </html>

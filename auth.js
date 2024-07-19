@@ -3,7 +3,7 @@
 
 const passport = require('passport');
 const { loginload } = require('./controller/userController');
-const bcrypt=require('bcrypt')
+// const bcrypt=require('bcrypt')
 
 require('dotenv').config()
 
