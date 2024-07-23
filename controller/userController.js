@@ -557,7 +557,7 @@ const loadShop = async (req, res) => {
         console.log(products);
 
         // Render the shop page with the products and wishlist
-        res.render('shop', { product:products, wish });
+        res.render('shop', { product:products, wish,req});
     } catch (error) {
         console.log(error.message);
         res.status(500).send('Internal Server Error');
