@@ -49,240 +49,169 @@ const verifyAdmin = async (req, res) => {
     }
 }
 
-async function salesReport(date){
-  try{
-      const currentDate = new Date();
-      let orders = [];
-      for (let i = 0; i < date; i++) {
-          const startDate = new Date(currentDate);
-          startDate.setDate(currentDate.getDate() - i);
-          startDate.setHours(0, 0, 0, 0);
-          const endDate = new Date(currentDate);
-          endDate.setDate(currentDate.getDate() - i);
-          endDate.setHours(23, 59, 59, 999);  
-      
-          const dailyOrders = await orderModel.find({
-            status: "Delivered",
-            orderDate: {
-              $gte: startDate,
-              $lt: endDate,
-            },
-          });
-          
-      
-          orders = [...orders, ...dailyOrders];
-        }
-  
-        let productEntered = [];
-        for (let i = 0; i < date; i++) {
-            const startDate = new Date(currentDate);
-            startDate.setDate(currentDate.getDate() - i);
-            startDate.setHours(0, 0, 0, 0);
-            const endDate = new Date(currentDate);
-            endDate.setDate(currentDate.getDate() - i);
-            endDate.setHours(23, 59, 59, 999);  
-        
-            const product = await productModel.find({
-              createdAt: {
-                $gte: startDate,
-                $lt: endDate,
-              },
-            });
-            
-        
-            productEntered= [...productEntered, ...product];
-          }
-        let users = await userModel.countDocuments();
-       
-  
-        let totalRevenue = 0;
-        orders.forEach((order) => {
-          totalRevenue += order.billTotal;
-        });
-      
-        let totalOrderCount = await orderModel.find({
-          status: "Delivered",
-        });
-      
-        let Revenue = 0;
-        totalOrderCount.forEach((order) => {
-          Revenue += order.billTotal;
-        });
-      
-        let stock = await productModel.find();
-        let totalCountInStock = 0;
-        stock.forEach((product) => {
-          totalCountInStock += product.countInStock;
-        });
-      
-        let averageSales = orders.length / date; 
-        let averageRevenue = totalRevenue / date; 
-   
-       
-        return {
-          users,
-          totalOrders: orders.length,
-          totalRevenue,
-          totalOrderCount: totalOrderCount.length,
-          totalCountInStock,
-          averageSales,
-          averageRevenue,
-          Revenue,
-          productEntered:productEntered.length,
-         
-          totalOrder:orders
-        };
-  }
-  catch(err){
-  console.log('salesreport',err.message);
-  }
-  }
-  async function orderPieChart() {
-    const statuses = ["Pending", "Processing", "Shipped", "Delivered", "Canceled", "Returned"];
-    const counts = await Promise.all(statuses.map(status => orderModel.countDocuments({ status })));
-
-    
-
-    const [Pending, Processing, Shipped, Delivered, Canceled, Returned] = counts;
-
-    return { Pending, Processing, Shipped, Delivered, Canceled, Returned };
-}
-  async function salesReportmw(startDate, endDate) {
-      try {
-          let orders = await orderModel.find({
-              status: "Delivered",
-              orderDate: {
-                  $gte: startDate,
-                  $lte: endDate,
-              },
-          });
-  
-          let productEntered = await productModel.find({
-              createdAt: {
-                  $gte: startDate,
-                  $lte: endDate,
-              },
-          });
-  
-          let usersCount = await userModel.countDocuments();
-  
-          let totalRevenue = orders.reduce((total, order) => total + order.billTotal, 0);
-  
-          let totalOrderCount = orders.length;
-  
-          let stock = await productModel.find(); 
-          let totalCountInStock = stock.reduce((total, product) => total + product.countInStock, 0);
-  
-          let daysInRange = (endDate - startDate) / (1000 * 60 * 60 * 24);
-          let averageSales = totalOrderCount / daysInRange; 
-          let averageRevenue = totalRevenue / daysInRange; 
-  
-          return {
-              usersCount,
-              totalOrders: totalOrderCount,
-              totalRevenue,
-              totalCountInStock,
-              averageSales,
-              averageRevenue,
-              productEntered: productEntered.length,
-              totalOrder: orders 
-          };
-      } catch (err) {
-          console.error('salesReport error', err.message);
-          throw err; 
-      }
-  }
-
-
-const loadDashboard = async (req, res) => {
+async function salesReport(days) {
   try {
-    let daily = await salesReport(1);
-    let weekly = await salesReport(7);
-    let monthly = await salesReport(30);
-    let yearly = await salesReport(365);
-    let allProductsCount = await productModel.countDocuments();
-    let orders=await orderModel.find().populate('user').limit(5);
+    const currentDate = new Date();
+    let orders = [];
+    let productEntered = [];
+    
+    for (let i = 0; i < days; i++) {
+      const { startDate, endDate } = getStartEndDate(currentDate, i);
+      
+      const [dailyOrders, dailyProducts] = await Promise.all([
+        orderModel.find({
+          status: "Delivered",
+          orderDate: { $gte: startDate, $lt: endDate }
+        }),
+        productModel.find({
+          createdAt: { $gte: startDate, $lt: endDate }
+        })
+      ]);
 
-    const topSellingProducts = await orderModel.aggregate([
-      { $match: { status: "Delivered" } },
-      { $unwind: "$items" },
-      {
-        $group: {
-          _id: "$items.productId",
-          totalQuantity: { $sum: "$items.quantity" },
-        },
-      },
-      { $sort: { totalQuantity: -1 } },
-      { $limit: 6 },
-      {
-        $lookup: {
-          from: "products",
-          localField: "_id",
-          foreignField: "_id",
-          as: "productDetails",
-        },
-      },
-      { $unwind: "$productDetails" },
-      {
-        $project: {
-          _id: "$productDetails._id",
-          pname: "$productDetails.pname",
-          totalQuantity: 1,
-          images: "$productDetails.images",
-          brand: "$productDetails.brand"
-        },
-      },
-    ]);
-    
-    
-    //////////////////************************** Top Selling Categories  ***************************//////////////////
-    
-    
-    const topSellingCategories = await orderModel.aggregate([
-      { $match: { status: "Delivered" } },
-      { $unwind: "$items" },
-      {
-        $lookup: {
-          from: "products",
-          localField: "items.productId",
-          foreignField: "_id",
-          as: "product",
-        },
-      },
-      { $unwind: "$product" },
-      {
-        $group: {
-          _id: "$product.category",
-          totalSales: { $sum: "$items.quantity" },
-        },
-      },
-      {
-        $lookup: {
-          from: "categories",
-          localField: "_id",
-          foreignField: "_id",
-          as: "category",
-        },
-      },
-      { $unwind: "$category" },
-      {
-        $project: {
-          name: "$category.name",
-          totalSales: 1,
-        },
-      },
-      { $sort: { totalSales: -1 } },
-      { $limit: 5 },
-    ]);
-    
-    let orderChart=await orderPieChart();
-    
-    res.render('adminhome',{daily,weekly,monthly,yearly,allProductsCount,orders,orderChart,topSellingCategories,topSellingProducts});
-} catch (error) {
-    console.error(error);
- 
+      orders = [...orders, ...dailyOrders];
+      productEntered = [...productEntered, ...dailyProducts];
+    }
+
+    const users = await userModel.countDocuments();
+    const totalRevenue = orders.reduce((total, order) => total + order.billTotal, 0);
+    const totalOrderCount = await orderModel.countDocuments({ status: "Delivered" });
+    const stock = await productModel.find();
+    const totalCountInStock = stock.reduce((total, product) => total + product.countInStock, 0);
+    const averageSales = orders.length / days;
+    const averageRevenue = totalRevenue / days;
+
+    return {
+      users,
+      totalOrders: orders.length,
+      totalRevenue,
+      totalOrderCount,
+      totalCountInStock,
+      averageSales,
+      averageRevenue,
+      Revenue: totalRevenue,
+      productEntered: productEntered.length,
+      totalOrder: orders
+    };
+  } catch (err) {
+    console.error('salesReport', err.message);
+  }
 }
+
+const getStartEndDate = (currentDate, daysAgo) => {
+  const startDate = new Date(currentDate);
+  startDate.setDate(currentDate.getDate() - daysAgo);
+  startDate.setHours(0, 0, 0, 0);
+
+  const endDate = new Date(currentDate);
+  endDate.setDate(currentDate.getDate() - daysAgo);
+  endDate.setHours(23, 59, 59, 999);
+
+  return { startDate, endDate };
 };
+
+  async function orderPieChart() {
+    try {
+      const statuses = ["Pending", "Processing", "Shipped", "Delivered", "Canceled", "Returned"];
+      const counts = await Promise.all(statuses.map(status => orderModel.countDocuments({ status })));
+      
+      const [Pending, Processing, Shipped, Delivered, Canceled, Returned] = counts;
+      return { Pending, Processing, Shipped, Delivered, Canceled, Returned };
+    } catch (err) {
+      console.error('orderPieChart', err.message);
+    }
+  }
+  
+
+
+
+  const loadDashboard = async (req, res) => {
+    try {
+      const [daily, weekly, monthly, yearly, allProductsCount, orders, topSellingProducts, topSellingCategories, orderChart] = await Promise.all([
+        salesReport(1),
+        salesReport(7),
+        salesReport(30),
+        salesReport(365),
+        productModel.countDocuments(),
+        orderModel.find().populate('user').limit(5),
+        orderModel.aggregate([
+          { $match: { status: "Delivered" } },
+          { $unwind: "$items" },
+          {
+            $group: {
+              _id: "$items.productId",
+              totalQuantity: { $sum: "$items.quantity" },
+            },
+          },
+          { $sort: { totalQuantity: -1 } },
+          { $limit: 6 },
+          {
+            $lookup: {
+              from: "products",
+              localField: "_id",
+              foreignField: "_id",
+              as: "productDetails",
+            },
+          },
+          { $unwind: "$productDetails" },
+          {
+            $project: {
+              _id: "$productDetails._id",
+              pname: "$productDetails.pname",
+              totalQuantity: 1,
+              images: "$productDetails.images",
+              brand: "$productDetails.brand",
+            },
+          },
+        ]),
+        orderModel.aggregate([
+          { $match: { status: "Delivered" } },
+          { $unwind: "$items" },
+          {
+            $lookup: {
+              from: "products",
+              localField: "items.productId",
+              foreignField: "_id",
+              as: "product",
+            },
+          },
+          { $unwind: "$product" },
+          {
+            $group: {
+              _id: "$product.category",
+              totalSales: { $sum: "$items.quantity" },
+            },
+          },
+          {
+            $lookup: {
+              from: "categories",
+              localField: "_id",
+              foreignField: "_id",
+              as: "category",
+            },
+          },
+          { $unwind: "$category" },
+          {
+            $project: {
+              name: "$category.name",
+              totalSales: 1,
+            },
+          },
+          { $sort: { totalSales: -1 } },
+          { $limit: 5 },
+        ]),
+        orderPieChart()
+      ]);
+  
+      res.render('adminhome', {
+        daily, weekly, monthly, yearly,
+        allProductsCount, orders, orderChart,
+        topSellingCategories, topSellingProducts
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
 
 
 
