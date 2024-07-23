@@ -44,6 +44,24 @@ const addtoWallet = async (req, res) => {
     }
 };
 
+
+
+// const loadWallet = async (req, res) => {
+//     try {
+//       const wallet = await walletModel.findOne({ user: req.session.user });
+  
+//       if (!wallet) {
+//         return res.status(404).render('wallet', { wallet: null, message: 'Wallet not found' });
+//       }
+  
+//       res.render('wallet', { wallet });
+//     } catch (error) {
+//       console.log('loadWallet Error:', error.message);
+//       res.status(500).render('error', { message: 'Internal Server Error' });
+//     }
+//   };
+  
 module.exports={
 addtoWallet
+
 }

@@ -141,26 +141,24 @@ const deleteCart = async (req, res) => {
         const { productId } = req.body;
 
         // Find the user's cart
-        let userCart = await cartModel.findOne({ owner: userId });
+        let userCart = await cartModel.findOne({ owner: userId }).populate({ path: 'items.productId', model: 'Products' });
         if (!userCart) {
             // Handle the case where there's no cart found for the user
             return res.status(404).json({ message: 'Cart not found' });
         }
 
         // Find if the product exists in the cart
-        const existingCartItemIndex = userCart.items.findIndex(item => item.productId.toString() === productId);
+        const existingCartItemIndex = userCart.items.findIndex(item => {
+            console.log(item.productId._id ,productId);
+            return item.productId._id.toString() === productId
+        });
+       
         if (existingCartItemIndex > -1) {
             // Remove the item from the cart
             userCart.items.splice(existingCartItemIndex, 1);
 
             // Recalculate the billTotal
-            userCart.billTotal = userCart.items.reduce((total, item) => {
-                let itemPrice = Number(item.price); // Ensure item.price is a number
-                let itemQuantity = Number(item.quantity); // Ensure item.quantity is a number
-                let itemTotal = itemPrice * itemQuantity;
-                console.log(`Calculating Item Total: ${itemTotal} (Price: ${itemPrice}, Quantity: ${itemQuantity})`); // Debug log
-                return total + (isNaN(itemTotal) ? 0 : itemTotal);
-            }, 0);
+            userCart.billTotal = userCart.items.reduce((total, item) => total + (item.quantity * (item.productId.price-item.productId.discountPrice)), 0);
             // Save the updated cart
             await userCart.save();
             return res.status(200).json({ success: true, message: 'Item removed from cart' });

@@ -205,9 +205,9 @@ try{
         const totalPage=Math.ceil(totalproducts / perPage);
        let address =await addressModel.findOne({user: req.session.user}) || null;
        let orders = await orderModel.find({ user: req.session.user}).skip(perPage * (page-1)).limit(perPage).sort({_id:-1})
-       || [];
+       ;
        const user = await User.findById(req.session.user);
-       const wallet = await walletModel.findOne({ user: req.session.user }) .skip(perPage * (page-1)).limit(perPage).sort({_id:-1});
+       const wallet = await walletModel.findOne({ user: req.session.user }).sort({_id:-1}) ;
        
        
      console.log('///////////',orders);
@@ -1008,8 +1008,75 @@ if(!userData){
 
 
 
+//  const loadwallet = async (req, res) => {
+//     try {
+//       const wallet = await walletModel.findOne({ user: req.session.user });
+//       const perPage=4;
+//       const page = parseInt(req.query.page) || 1;
+//       const totalwallet= await walletModel.countDocuments({});
+//       const totalPage=Math.ceil(totalwallet / perPage);
+//       if (!wallet) {
+//         return res.status(404).render('wallet', { wallet: null, message: 'Wallet not found' });
+//       }
 
-
+     
+//   console.log(wallet);
+//       res.render('wallet', { wallet });
+//       const wallet1 = await walletModel.findOne({ user: req.session.user }).skip(perPage * (page-1)).limit(perPage).sort({_id:-1})
+//     } catch (error) {
+//       console.log('loadWallet Error:', error.message);
+//       res.status(500).render('error', { message: 'Internal Server Error' });
+//     }
+//   };
+  
+const loadwallet = async (req, res) => {
+    try {
+      const userId = req.session.user;
+      const wallet = await walletModel.findOne({ user: userId });
+  
+      if (!wallet) {
+        return res.status(404).render('wallet', { wallet: null, message: 'Wallet not found' });
+      }
+  
+      const perPage = 5;
+      const page = parseInt(req.query.page) || 1;
+      const sortField = req.query.sortField || 'updatedAt';
+      const sortOrder = req.query.sortOrder === 'asc' ? 1 : -1;
+  
+      // Retrieve the total number of transactions
+      const totalTransactions = wallet.transactions.length;
+      const totalPages = Math.ceil(totalTransactions / perPage);
+  
+      // Sort transactions
+      const sortedTransactions = wallet.transactions.sort((a, b) => {
+        if (a[sortField] < b[sortField]) return -1 * sortOrder;
+        if (a[sortField] > b[sortField]) return 1 * sortOrder;
+        return 0;
+      });
+  
+      // Paginate transactions
+      const paginatedTransactions = sortedTransactions.slice((page - 1) * perPage, page * perPage);
+  
+      // Create a new wallet object with paginated transactions
+      const paginatedWallet = {
+        ...wallet._doc,
+        transactions: paginatedTransactions
+      };
+  
+      res.render('wallet', {
+        wallet: paginatedWallet,
+        currentPage: page,
+        totalPages,
+        perPage,
+        sortField,
+        sortOrder
+      });
+    } catch (error) {
+      console.log('loadWallet Error:', error.message);
+      res.status(500).render('error', { message: 'Internal Server Error' });
+    }
+  };
+  
 module.exports = {
     loadRegister,
     insertUser,
@@ -1037,5 +1104,6 @@ module.exports = {
     returnOrder ,
     newArrivals,
     invoice,
-    googleSignUp
+    googleSignUp,
+    loadwallet
 }

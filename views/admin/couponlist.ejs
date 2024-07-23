@@ -178,7 +178,9 @@
                                         <td><%= coupon.discountPercentage %></td>
                                         <td><%= coupon.minimumAmount %></td>
                                         <td><%= coupon.maximumAmount %></td>
-                                        <td><%= coupon.expirationDate %></td>
+                                        <td><%= new Date(coupon.expirationDate).toLocaleDateString("en-US") %></td>
+
+                                        
                                         <td><%= coupon.maxUsers %></td>
                                         <td>
                                             <% if (coupon.isActive) { %>
@@ -212,12 +214,17 @@
                 <a class="page-link" href="couponlist?page=1">1</a>
             </li>
             <li class="page-item">
-                <a class="page-link" href="couponlist">2</a>
+                <a class="page-link" href="couponlist?page=2">2</a>
             </li>
             <li class="page-item">
                 <a class="page-link" href="couponlist?page=3">3</a>
             </li>
-                  
+            <li class="page-item">
+                <a class="page-link" href="couponlist?page=4">4</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="couponlist?page=5"></a>
+            </li>    
         </ul>
     </nav>
 </div>

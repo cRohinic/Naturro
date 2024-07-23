@@ -17,7 +17,7 @@ const checkoutController=require("../controller/checkoutController")
 const couponController = require("../controller/couponController");
 // const wishlistModel = require("../models/wishlistModel");
 const wishlistController = require('../controller/wishlistController');
-
+const walletController= require('../controller/walletController')
 user_route.get('/register',auth.isLogout,userController.loadRegister);
 user_route.post('/register',userController.insertUser);
 user_route.get('/otp',auth.isLogout,userController.getOtp);
@@ -73,7 +73,7 @@ user_route.get('/search',auth.isLogin,productController.showsearch);
 user_route.post('/addToWallet',auth.isLogin,userController.addToWallet);
 user_route.get('/productDetails',auth.isLogin,productController.loadIndividualProduct);
 user_route.get('/productDetails',auth.isLogin,productController.updatepro );
-
+user_route.get('/wallet',auth.isLogin,userController.loadwallet)
 user_route.get('/pdf',auth.isLogin,userController.invoice);
 
 user_route.get('/logout',userController.userLogout);

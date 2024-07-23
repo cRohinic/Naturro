@@ -66,33 +66,33 @@
                         <div class="header-top-right">
                             <!-- Start Header Action Link -->
                             <ul class="header-action-link action-color--black action-hover-color--aqua">
-                                <li>
+                                <!-- <li>
                                     <a href="#offcanvas-wishlish" class="offcanvas-toggle">
                                         <i class="icon-heart"></i>
-                                        <!-- <span class="item-count">3</span> -->
+                                        <span class="item-count">3</span> -->
                                     </a>
                                 </li>
-                                <li>
+                                <!-- <li>
                                     <a href="cart" >
-                                        <i class="icon-bag"></i>
+                                        <i class="icon-bag"></i>  -->
                                         <!-- <span class="item-count">3</span> -->
                                     </a>
                                 </li>
-                                <li>
+                                <!-- <li>
                                     <a href="#search">
                                         <i class="icon-magnifier"></i>
                                     </a>
-                                </li>
-                                <li>
+                                </li> -->
+                                <!-- <li>
                                     <a href="/userprofile">
                                         <i class="icon-user"></i>
                                     </a>
-                                </li>
-                                <li>
+                                </li> -->
+                                <!-- <li>
                                     <a href="#offcanvas-about" class="offacnvas offside-about offcanvas-toggle">
                                         <i class="icon-menu"></i>
                                     </a>
-                                </li>
+                                </li> -->
                             </ul>
                             <!-- End Header Action Link -->
                         </div>
@@ -111,7 +111,7 @@
                                 <nav>
                                     <ul>
                                         <li class="has-dropdown">
-                                            <a class="active main-menu-link" href="">Home <i
+                                            <a class="active main-menu-link" href="home">Home <i
                                                     class="fa fa-angle-down"></i></a>
                                             <!-- Sub Menu 
                                              <ul class="sub-menu">
@@ -126,7 +126,13 @@
                                             
                                             
                                         </li>
-                                        <!-- <li class="has-dropdown">
+                                        <li class="has-dropdown has-megaitem">
+                                            <a href="cart">Cart</a>
+                                            <li class="has-dropdown">
+                                                <a class="active main-menu-link" href="wallet">Wallet <i
+                                                        class="fa fa-angle-down"></i></a>
+<!--                           
+                                        <li class="has-dropdown">
                                             <a href="">Blog <i
                                                     class="fa fa-angle-down"></i></a> 
                                              Sub Menu
@@ -226,6 +232,7 @@
                                             </ul> 
                                         </li>
                                         <li> -->
+                                         
                                             <a href="/logout">Logout</a>
                                         </li>
                                         <!-- <li>
@@ -239,7 +246,7 @@
                             <!-- Start Header Action Link -->
                             <ul class="header-action-link action-color--black action-hover-color--aqua">
                                 <li>
-                                    <a href="#offcanvas-wishlish" class="offcanvas-toggle">
+                                    <a href="wishlish" class="offcanvas-toggle">
                                         <i class="icon-heart"></i>
                                         <!-- <span class="item-count">3</span> -->
                                     </a>
@@ -250,10 +257,10 @@
                                         <!-- <span class="item-count">3</span> -->
                                     </a>
                                 </li>
-                                <li>
+                                <!-- <li>
                                     <a href="#search">
                                         <i class="icon-magnifier"></i>
-                                    </a>
+                                    </a> -->
                                 </li>
                                 <li>
                                     <a href="userprofile">
@@ -299,7 +306,7 @@
                     <div class="mobile-right-side">
                         <ul class="header-action-link action-color--black action-hover-color--aqua">
                             <li>
-                                <a href="#offcanvas-wishlish" class="offcanvas-toggle">
+                                <a href="#wishlish" class="offcanvas-toggle">
                                     <i class="icon-heart"></i>
                                     <!-- <span class="item-count">3</span> -->
                                 </a>
@@ -310,11 +317,11 @@
                                     <!-- <span class="item-count">3</span> -->
                                 </a>
                             </li>
-                            <li>
+                            <!-- <li>
                                 <a href="#search">
                                     <i class="icon-magnifier"></i>
                                 </a>
-                            </li>
+                            </li> -->
                             <li>
                                 <a href="/userprofile">
                                     <i class="icon-user"></i>
@@ -717,8 +724,8 @@
                                     class="nav-link btn btn-block btn-md btn-black-default-hover">Downloads</a></li> -->
                             <li><a href="#address" data-bs-toggle="tab"
                                     class="nav-link btn btn-block btn-md btn-black-default-hover">Addresses</a></li>
-                                    <li><a href="#wallet" data-bs-toggle="tab"
-                                        class="nav-link btn btn-block btn-md btn-black-default-hover">Wallet</a></li>
+                                    <!-- <li><a href="#wallet" data-bs-toggle="tab"
+                                        class="nav-link btn btn-block btn-md btn-black-default-hover">Wallet</a></li> -->
                             <!-- <li><a href="#account-details" data-bs-toggle="tab"
                                     class="nav-link btn btn-block btn-md btn-black-default-hover">Dashboard</a>
                             </li> -->
@@ -807,20 +814,20 @@
     <nav aria-label="Page navigation">
         <ul class="pagination">
             <li class="page-item active" aria-current="page">
-                <a class="page-link" href="userprofile#order?page=1">1</a>
+                <a class="page-link" href="userprofile#orders?page=1">1</a>
             </li>
             <li class="page-item">
-                <a class="page-link" href="userprofile#order?page=2">2</a>
+                <a class="page-link" href="userprofile#orders?page=2">2</a>
             </li>
             <li class="page-item">
                 <a class="page-link" href="userprofile#order?page=3">3</a>
             </li>
             <li class="page-item">
-                <a class="page-link" href="userprofile#order?page=3">4</a>
+                <a class="page-link" href="userprofile#order?page=4">4</a>
             </li>
            
             <li class="page-item">
-                <a class="page-link" href="userprofile#order?page=11"><i class="ion-ios-skipforward"></i></a>
+                <a class="page-link" href="userprofile#order?page="><i class="ion-ios-skipforward"></i></a>
             </li>
         </ul>
     </nav>

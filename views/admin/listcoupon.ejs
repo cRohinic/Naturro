@@ -29,13 +29,16 @@
             </div>
         </div>
         <nav>
-            <li class="menu-item active ">
-                <a class="menu-link" href="/admin/home"> <i class="icon material-icons md-home"></i>
-                    <span class="text">Dashboard</span>
-                </a>
-            </li>
             
             <ul class="menu-aside">
+                
+
+                <li class="menu-item active ">
+                    <a class="menu-link" href="/admin/home"> <i class="icon material-icons md-home"></i>
+                        <span class="text">Dashboard</span>
+                    </a>
+                </li>
+                
                 <li class="menu-item">
                     <a class="menu-link" href="/admin/userlist"> <!-- Placeholder link for Users -->
                         <i class="icon material-icons md-person"></i>
@@ -81,7 +84,6 @@
                 </li>
             </ul>
         </nav>
-
 
         
     </aside>
@@ -178,7 +180,8 @@
                                         <td><%= coupon.discountPercentage %></td>
                                         <td><%= coupon.minimumAmount %></td>
                                         <td><%= coupon.maximumAmount %></td>
-                                        <td><%= coupon.expirationDate %></td>
+                                        <td><%= new Date(coupon.expirationDate).toLocaleDateString("en-US") %></td>
+
                                         <td><%= coupon.maxUsers %></td>
                                         <td>
                                             <% if (coupon.isActive) { %>

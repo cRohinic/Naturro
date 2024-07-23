@@ -11,7 +11,7 @@ const listCoupons = async (req, res) => {
             const page = parseInt(req.query.page) || 1;
             const totalcoupon= await couponModel.countDocuments({});
             const totalPage=Math.ceil(totalcoupon/ perPage);
-            const coupons = await couponModel.find({}).skip(perPage * (page-1)).limit(perPage);
+            const coupons = await couponModel.find({}).skip(perPage * (page-1)).limit(perPage).sort({_id:-1});
        res.render('couponlist',{coupons})
     } catch (error) {
         console.error("Error listing coupons:", error.message);
