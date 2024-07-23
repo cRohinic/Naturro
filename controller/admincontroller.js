@@ -983,12 +983,6 @@ const loadsales = async(req,res)=>{
         }
       };
       
-
-     
-
-
-
-
         const pdf = async (req, res) => {
           try {
               let title = "";
@@ -1003,7 +997,7 @@ const loadsales = async(req,res)=>{
                       let weeklySalesData = [];
                       const weeks = getWeeksInMonth(currentDate);
                       for (const week of weeks) {
-                          const data = await salesReportmw(week.start, week.end);
+                          const data = await salesReport(week.start, week.end);
                           weeklySalesData.push({ ...data, period:`Week ${weeks.indexOf(week) + 1}, ${getMonthName(currentDate.getMonth())}` });
                       }
                       generatePDF(weeklySalesData, "Weekly Sales Report", res);
@@ -1014,7 +1008,7 @@ const loadsales = async(req,res)=>{
                       for (const { month, year } of months) {
                           const monthStart = new Date(year, month, 1);
                           const monthEnd = new Date(year, month + 1, 0);
-                          const data = await salesReportmw(monthStart, monthEnd);
+                          const data = await salesReport(monthStart, monthEnd);
                           monthlySalesData.push({ ...data, period: `${getMonthName(month)} ${currentDate.getFullYear()}` });
                       }
                       generatePDF(monthlySalesData, "Monthly Sales Report", res);

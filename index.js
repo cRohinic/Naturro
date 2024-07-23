@@ -5,7 +5,7 @@ const noCache = require("nocache");
 const path = require("path"); 
 const passport = require("passport");
 const cookieParser = require("cookie-parser");
-// const bcrypt=require('bcrypt')
+
 require('./auth')
  const dotenv=require('dotenv')
  dotenv.config()

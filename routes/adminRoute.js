@@ -87,5 +87,6 @@ admin_route.get('/active',auth.isLogin,productController.activeStatus);
 admin_route.get('/editproduct',auth.isLogin,productController.loadEdit);
 admin_route.post('/editproduct',auth.isLogin,upload,productController.editProduct);
 admin_route.get('/deleteimage',auth.isLogin,productController.deleteimage);
+admin_route.get('/excel',auth.isLogin,adminController.generateExcel);
 
 module.exports = admin_route;
