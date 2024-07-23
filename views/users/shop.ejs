@@ -660,23 +660,23 @@
                                         <label class="mr-2" style="background-color: rgb(214, 207, 211);">Sort By:</label>
                                         <form action="/shop" method="GET">
                                             <fieldset>
-                                                <!-- Preserve existing query parameters -->
-                                                <% if (req.query.category) { %>
-                                                    <input type="hidden" name="category" value="<%= req.query.category %>">
+                                                <% if (category) { %>
+                                                    <input type="hidden" name="category" value="<%= category %>">
                                                 <% } %>
-                                                <% if (req.query.page) { %>
-                                                    <input type="hidden" name="page" value="<%= req.query.page %>">
+                                                <% if (currentPage) { %>
+                                                    <input type="hidden" name="page" value="<%= currentPage %>">
                                                 <% } %>
                                                 <select name="sort" id="speed" style="background-color: rgb(214, 207, 211);" onchange="this.form.submit()">
-                                                    <option value="rating">Sort by average rating</option>
-                                                    <option value="newness">Sort by newness</option>
-                                                    <option value="priceAsc">Sort by price: low to high</option>
-                                                    <option value="priceDesc">Sort by price: high to low</option>
-                                                    <option value="nameAsc">Product Name: A - Z</option>
-                                                    <option value="nameDesc">Product Name: Z - A</option>
+                                                    <option value="rating" <%= sort === 'rating' ? 'selected' : '' %>>Sort by average rating</option>
+                                                    <option value="newness" <%= sort === 'newness' ? 'selected' : '' %>>Sort by newness</option>
+                                                    <option value="priceAsc" <%= sort === 'priceAsc' ? 'selected' : '' %>>Sort by price: low to high</option>
+                                                    <option value="priceDesc" <%= sort === 'priceDesc' ? 'selected' : '' %>>Sort by price: high to low</option>
+                                                    <option value="nameAsc" <%= sort === 'nameAsc' ? 'selected' : '' %>>Product Name: A - Z</option>
+                                                    <option value="nameDesc" <%= sort === 'nameDesc' ? 'selected' : '' %>>Product Name: Z - A</option>
                                                 </select>
                                             </fieldset>
                                         </form>
+                                        
                                     </div>
                                     <!-- End Sort Select Option -->
 
@@ -847,20 +847,20 @@
                 <!-- Start Pagination -->
 <div class="page-pagination text-center" data-aos="fade-up" data-aos-delay="6">
     <nav aria-label="Page navigation">
-   <ul class="pagination">
-    <% const currentPage = parseInt(req.query.page) || 1; %>
-    <% const category = req.query.category ? `category=${req.query.category}&` : ''; %>
-
-    <% for (let i = 1; i <= 5; i++) { %>
-        <li class="page-item <%= currentPage === i ? 'active' : '' %>" aria-current="<%= currentPage === i ? 'page' : '' %>">
-            <a class="page-link" href="/shop?<%= category %>page=<%= i %>"><%= i %></a>
-        </li>
-    <% } %>
-    
-    <li class="page-item">
-        <a class="page-link" href="/shop?<%= category %>page=<%= currentPage < 5 ? currentPage + 1 : 5 %>"><i class="ion-ios-skipforward"></i></a>
-    </li>
-</ul>
+        <ul class="pagination">
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <li class="page-item <%= currentPage === i ? 'active' : '' %>" aria-current="<%= currentPage === i ? 'page' : '' %>">
+                    <a class="page-link" href="/shop?category=<%= category %>&sort=<%= sort %>&search=<%= search %>&page=<%= i %>"><%= i %></a>
+                </li>
+            <% } %>
+            
+            <li class="page-item">
+                <a class="page-link" href="/shop?category=<%= category %>&sort=<%= sort %>&search=<%= search %>&page=<%= currentPage < totalPages ? currentPage + 1 : totalPages %>">
+                    <i class="ion-ios-skipforward"></i>
+                </a>
+            </li>
+        </ul>
+        
 
     </nav>
 </div>

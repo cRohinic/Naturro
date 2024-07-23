@@ -490,15 +490,14 @@ const deleteAddress = async (req, res) => {
 
 const loadShop = async (req, res) => {
     try {
-        let product=await  ProductModel.find({list:true})
-        const perPage=8;
-            const page = parseInt(req.query.page) || 1;
-            const totalproducts= await ProductModel.countDocuments({});
-            const totalPage=Math.ceil(totalproducts / perPage);
-        let sortOption = {};
+        const category = req.query.category || '';
+        const page = parseInt(req.query.page) || 1;
+        const sort = req.query.sort || '';
+        const perPage = 8;
 
         // Determine the sort option based on query parameter
-        switch (req.query.sort) {
+        let sortOption = {};
+        switch (sort) {
             case 'rating':
                 sortOption = { rating: -1 };
                 break;
@@ -522,8 +521,7 @@ const loadShop = async (req, res) => {
                 break;
         }
 
-        console.log(sortOption);
-
+        // Base query
         let query = { is_deleted: false };
 
         // Add search filter to the query if present
@@ -535,34 +533,36 @@ const loadShop = async (req, res) => {
             ];
         }
 
-        // Add category filter 
-        if (req.query.category) {
-            const category = await categoryModel.findOne({ name: req.query.category });
-            if (category) {
-                query.category = category._id;
+        // Add category filter if present
+        if (category) {
+            const categoryDoc = await categoryModel.findOne({ name: category });
+            if (categoryDoc) {
+                query.category = categoryDoc._id;
             }
         }
 
+        // Fetch the total number of products for pagination
+        const totalProducts = await ProductModel.countDocuments(query);
+        const totalPage = Math.ceil(totalProducts / perPage);
+
         // Fetch the products based on the query and sort options
-        let products = await ProductModel.find(query).sort(sortOption).populate('category').skip(perPage * (page - 1))
-                .limit(perPage).sort({_id:-1});
-        if (!products) {
-            products = [];
-        }
+        const product = await ProductModel.find(query)
+            .sort(sortOption)
+            .populate('category')
+            .skip(perPage * (page - 1))
+            .limit(perPage);
 
         // Fetch the user's wishlist
         const wish = await wishlistModel.findOne({ user: req.session.user }) || null;
 
-        console.log(wish);
-        console.log(products);
-
         // Render the shop page with the products and wishlist
-        res.render('shop', { product:products, wish,req});
+        res.render('shop', { product, wish, currentPage: page, totalPages: totalPage, category, sort, search });
     } catch (error) {
         console.log(error.message);
         res.status(500).send('Internal Server Error');
     }
 };
+
 
 
 
