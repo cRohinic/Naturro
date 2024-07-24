@@ -508,7 +508,7 @@ const loadShop = async (req, res) => {
                 sortOption = { discountPrice: -1 };
                 break;
             case 'newness':
-                sortOption = { createdAt: -1 };
+                sortOption = { _id: -1 };
                 break;
             case 'nameAsc':
                 sortOption = { name: 1 };

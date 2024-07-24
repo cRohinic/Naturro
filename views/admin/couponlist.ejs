@@ -158,7 +158,8 @@
                             <thead>
                                 <tr>
                                     <th>S NO.</th>
-                                    <th>Coupon Name</th>
+                                    <!-- <th>Coupon Name</th> -->
+                                    <th>Coupon Code</th>
                                     <th>Description</th>
                                     <th>Discount In Purchase Amount</th>
                                     <th>Minimum Purchase Amount</th>
@@ -173,6 +174,7 @@
                                 <% coupons.forEach((coupon, index) => { %>
                                     <tr>
                                         <td><%= index + 1 %></td>
+                                        <!-- <td><%= coupon.Name %></td> -->
                                         <td><%= coupon.code %></td>
                                         <td><%= coupon.description %></td>
                                         <td><%= coupon.discountPercentage %></td>

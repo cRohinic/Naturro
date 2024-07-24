@@ -519,7 +519,7 @@ const loadCategory = async(req,res)=>{
             const totalcate= await categoryModel.countDocuments({});
             const totalPage=Math.ceil(totalcate/ perPage);
        
-        const category = await categoryModel.find({}).skip(perPage * (page-1)).limit(perPage);
+        const category = await categoryModel.find({}).skip(perPage * (page-1)).limit(perPage).sort({_id:-1});
         res.render('category',{category})
     }catch(error){
         console.log(error.message);
