@@ -22,7 +22,7 @@ const loadAndShowCart = async (req, res) => {
             userCart = null;
         }
         
-        res.render('cart', { cart: userCart, coupon: eligibleCoupons }); // Pass the 'coupon' variable to the EJS template
+        res.render('cart', { cart: userCart, coupon: eligibleCoupons }); 
     } catch (err) {
         console.log('loadAndShowCart:', err.message);
         res.status(500).send('Error loading cart');

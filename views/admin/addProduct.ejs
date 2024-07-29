@@ -18,8 +18,140 @@
   <!-- cropper js -->
    <!-- <link href="cropperjs/cropper.css" rel="stylsheet">
    <script src="cropperjs/cropper.js"></script> -->
+<!-- Cropper.js CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+
+<!-- Cropper.js JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 
    <link href="style.css" rel="stylesheet">
+   <style>
+    /* Pagination Styles */
+.page-pagination {
+    margin-top: 20px;
+}
+
+.page-pagination .pagination {
+    justify-content: center;
+    padding-left: 0;
+    list-style: none;
+    border-radius: 0.25rem;
+}
+
+.page-pagination .page-item {
+    display: inline;
+}
+
+.page-pagination .page-item .page-link {
+    color: #000;
+    padding: 0.5rem 0.75rem;
+    margin: 0 5px;
+    text-decoration: none;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+}
+
+.page-pagination .page-item.active .page-link {
+    background-color: #000;
+    color: #fff;
+    border-color: #000;
+}
+
+.page-pagination .page-item .page-link:hover {
+    background-color: #f1f1f1;
+    border-color: #ddd;
+}
+
+
+        .image-container {
+            display: inline-block;
+            position: relative;
+            margin: 10px;
+        }
+        .close-button {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: rgb(3, 78, 42);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        #cropperModal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        #cropperModalContent {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+        .cropper-buttons {
+            text-align: right;
+        }
+   
+        .table-container {
+            padding: 20px;
+        }
+        .table-hover tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+        .btn-primary {
+            margin-right: 5px;
+        }
+        .product-image {
+            border-radius: 5px;
+            margin-right: 5px;
+        }
+        .status-active {
+            color: #008000;
+        }
+        .status-inactive {
+            color: hsl(144, 62%, 26%);
+        }
+
+
+        .table-container {
+            padding: 20px;
+            width: 100%;
+            overflow-x: auto;
+        }
+        .table {
+            width: 100%;
+            min-width: 1200px; /* Adjust this as necessary */
+        }
+        .table-hover tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+        .btn-primary {
+            margin-right: 5px;
+        }
+        .product-image {
+            border-radius: 5px;
+            margin-right: 5px;
+        }
+        .status-active {
+            color: rgb(5, 61, 5);
+        }
+        .status-inactive {
+            color: rgb(8, 49, 34);
+        }
+
+
+</style>
+
 </head>
 
 <body>
@@ -215,88 +347,132 @@
                                 </div>
                             
                                
-                                <div class="mb-4">
+                                <!-- <div class="mb-4">
                                     <label for="product_images" class="form-label">Images</label>
                                     <div id="selectedImagesContainer"></div>
                                     <input type="file" class="form-control" name="images" id="product_images" multiple onchange="displaySelectedImages(this)">
                                    
-                                     <!-- <button id="btn-crop">Crop Image</button>
+                                 <button id="btn-crop">Crop Image</button>
                                      <div class="cropped-container">
                                         <img src="" id="output">
                                      </div> -->
 
-                                    <small class="form-text text-muted">You can select multiple images.</small>
-                                    <p id="imagesError" class="text-danger"></p> <!-- Placeholder for images error -->
-                                </div>
-                            
-                                <div class="mb-4">
-                                    <div id="mainError" class="text-danger"></div> <!-- Main error message placeholder -->
-                                    <button type="submit" class="btn btn-primary">Submit</button>
-                                </div>
-                            </form>
-                            
-                            
-                        </div>
-                    </div> <!-- card end// -->
-                </div>
-                <div>
-                    <table class="table table-hover">
-                        <tr>
-                            <th>Name</th>
-                            <th>Description</th>
-                            <th>Images</th>
-                            <th>Category</th>
-                            <th>Price</th>
-                            <th>Discount Price</th>
-                            <th>Stock</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                        
-                        <% if(product.length > 0) {
-                            for(let i=0; i<product.length; i++) { %>
-                                <tr>
-                                    <td><%= product[i].name %></td>
-                                    <td><%= product[i].description %></td>
-                                    <td>
-                                        <% product[i].images.forEach(image => { %>
-                                            <img src="../uploads/productImages/<%= image %>" alt="" height="60px" width="60px">
-                                        <% }) %>
-                                    </td>
-                                    <td><%= product[i].category.name %></td>
-                                    <td><%= product[i].price %></td>
-                                    <td><%= product[i].discountPrice %></td>
-                                    <td><%= product[i].countInStock %></td>
-                                    <td><%= product[i].is_deleted ? 'Inactive' : 'Active' %></td> 
-                                    <td>
-                                        <!-- Toggle button to change status -->
-                                        <a href="/admin/active?id=<%= product[i]._id %>" class="btn btn-primary">
-                                            <%= product[i].is_deleted ? 'Active' : 'Inactive' %>
-                                        </a>
-                                        
-                                        <a href="/admin/editproduct?id=<%= product[i]._id %>" class="btn btn-primary">Edit</a>
-                                    </td>
-                                </tr>
-                            <% }
-                        } else { %>
-                            <tr>
-                                <td colspan="9">Product Not Found</td>
-                            </tr>
-                        <% } %>
-                    </table>
-                    
-                    
+                                    <!-- <small class="form-text text-muted">You can select multiple images.</small>
+                                    <p id="imagesError" class="text-danger"></p>
+                                </div> -->
+                            <!-- Images Section -->
+<div class="mb-4">
+    <label for="product_images" class="form-label">Images</label>
+        <div id="selectedImagesContainer"></div>
+        <input type="file" class="form-control" name="images" id="product_images" multiple onchange="displaySelectedImages(this)">
+        <small class="form-text text-muted">You can select multiple images.</small>
+        <p id="imagesError" class="text-danger"></p>
+ <!-- <--Cropping Modal --> 
+<div id="cropperModal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="img-container">
+                    <img id="image" src="" alt="Image for cropping">
                 </div>
             </div>
+            <div class="modal-footer">
+                <button type="button" id="cropButton" class="btn btn-primary">Crop</button>
+                <button type="button" id="cancelCropButton" class="btn btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div> 
 
 
 
 
-                <!-- Start Pagination -->
+
+<!--  
+    <input type="file" id="fileInput" multiple onchange="handleFileInputChange(event)">
+<div id="selectedImagesContainer"></div>
+
+<div id="cropperModal">
+    <div id="cropperModalContent">
+        <img id="image" style="max-width: 100%;">
+        <div class="cropper-buttons">
+            <button id="cropButton">Crop</button>
+            <button id="cancelCropButton">Cancel</button>
+        </div>
+    </div>
+</div> -->
+
+                                <div class="mb-4">
+                                    <div id="mainError" class="text-danger"></div> 
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </div> 
+
+
+                            </form>
+                      
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                    <div class="container table-container">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Images</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Discount Price</th>
+                                    <th>Stock</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (product.length > 0) {
+                                    for (let i = 0; i < product.length; i++) { %>
+                                        <tr>
+                                            <td><%= product[i].name %></td>
+                                            <td><%= product[i].description %></td>
+                                            <td>
+                                                <% product[i].images.forEach(image => { %>
+                                                    <img src="../uploads/productImages/<%= image %>" alt="" class="product-image" height="60" width="60">
+                                                <% }) %>
+                                            </td>
+                                            <td><%= product[i].category.name %></td>
+                                            <td><%= product[i].price %></td>
+                                            <td><%= product[i].discountPrice %></td>
+                                            <td><%= product[i].countInStock %></td>
+                                            <td class="<%= product[i].is_deleted ? 'status-inactive' : 'status-active' %>">
+                                                <%= product[i].is_deleted ? 'Inactive' : 'Active' %>
+                                            </td>
+                                            <td>
+                                                <a href="/admin/active?id=<%= product[i]._id %>" class="btn btn-primary">
+                                                    <%= product[i].is_deleted ? 'Activate' : 'Deactivate' %>
+                                                </a>
+                                                <a href="/admin/editproduct?id=<%= product[i]._id %>" class="btn btn-primary">Edit</a>
+                                            </td>
+                                        </tr>
+                                    <% }
+                                } else { %>
+                                    <tr>
+                                        <td colspan="9">Product Not Found</td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+        
+                </div>
+                
+
+
                 <div class="page-pagination text-center" data-aos="fade-up" data-aos-delay="6">
                     <nav aria-label="Page navigation">
-                        <ul class="pagination">
-                            <li class="page-item active" aria-current="page">
+                        <ul class="pagination" id="pagination">
+                            <li class="page-item" aria-current="page">
                                 <a class="page-link" href="product?page=1">1</a>
                             </li>
                             <li class="page-item">
@@ -317,15 +493,12 @@
                             <li class="page-item">
                                 <a class="page-link" href="product?page=7">7</a>
                             </li>
-                        
-                                                    
+                            
                         </ul>
                     </nav>
                 </div>
                 
-
-
-
+            </div>
 
 
 
@@ -364,6 +537,9 @@
             </div>
         </footer>
     </main>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="admin-assets/js/vendors/jquery-3.6.0.min.js"></script>
     <script src="admin-assets/js/vendors/bootstrap.bundle.min.js"></script>
     <script src="admin-assets/js/vendors/select2.min.js"></script>
@@ -376,50 +552,93 @@
 
 
 
+
+
+
+
+
+
 function displaySelectedImages(input) {
     const selectedImagesContainer = document.getElementById('selectedImagesContainer');
-    // Clear previous images and text
     selectedImagesContainer.innerHTML = '';
-
     const files = input.files;
+   
     for (let i = 0; i < files.length; i++) {
-        const imageContainer = document.createElement('div'); // Create a container for each image
+        const file = files[i];
+        const imageContainer = document.createElement('div');
+        imageContainer.classList.add('image-container');
         const image = document.createElement('img');
-        image.src = URL.createObjectURL(files[i]);
+        image.src = URL.createObjectURL(file);
         image.height = 60;
         image.width = 60;
-
-        const closeButton = document.createElement('button'); // Create a button for the close icon
-        closeButton.innerHTML = '&times;'; // HTML entity for the cross (×) symbol
-        closeButton.classList.add('close-button'); // Optionally, you can add a class for styling
-
+        const closeButton = document.createElement('button');
+        closeButton.innerHTML = '&times;';
+        closeButton.classList.add('close-button');
         closeButton.addEventListener('click', function() {
-            // Remove the image container when the close button is clicked
             imageContainer.remove();
-            // Clear the input value to allow selecting the same image again
-            input.value = '';
+            const newFileList = Array.from(input.files).filter(f => f !== file);
+            updateFileInput(input, newFileList);
         });
-
-        // Append the image to the container after the close button
+   
+        image.addEventListener('click', function() {
+            showCropperModal(file, imageContainer, input);
+        });
         imageContainer.appendChild(image);
-        // Append the close button to the container
         imageContainer.appendChild(closeButton);
-
-        // Append the container to the selectedImagesContainer
         selectedImagesContainer.appendChild(imageContainer);
     }
 }
 
+function showCropperModal(file, imageContainer, input) {
+    const modal = document.getElementById('cropperModal');
+    const image = document.getElementById('image');
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        image.src = e.target.result;
+        modal.style.display = 'block';
+        const cropper = new Cropper(image, {
+            aspectRatio: 1,
+            viewMode: 1,
+            autoCropArea: 1,
+        });
+        document.getElementById('cropButton').addEventListener('click', function() {
+            const canvas = cropper.getCroppedCanvas();
+            canvas.toBlob(function(blob) {
+                const croppedFile = new File([blob], file.name, { type: 'image/png', lastModified: new Date().getTime() });
+                const croppedImage = document.createElement('img');
+                croppedImage.src = URL.createObjectURL(croppedFile);
+                croppedImage.height = 60;
+                croppedImage.width = 60;
+                imageContainer.innerHTML = '';
+                imageContainer.appendChild(croppedImage);
+               
+                const newFileList = Array.from(input.files).map(f => f === file ? croppedFile : f);
+                updateFileInput(input, newFileList);
+               
+                modal.style.display = 'none';
+                cropper.destroy();
+            }, 'image/png');
+        });
+        document.getElementById('cancelCropButton').addEventListener('click', function() {
+            modal.style.display = 'none';
+            cropper.destroy();
+        });
+    };
+    reader.readAsDataURL(file);
+}
 
+function updateFileInput(input, files) {
+    const dataTransfer = new DataTransfer();
+    files.forEach(file => {
+        dataTransfer.items.add(file);
+    });
+    input.files = dataTransfer.files;
+}
 
-
-
-
-
-
-
-
-
+function handleFileInputChange(event) {
+    const input = event.target;
+    displaySelectedImages(input);
+}
 
 
 
@@ -523,7 +742,27 @@ function validateCategory() {
 }
 
     </script>
+     <script>
+        // Function to get the current page from the URL
+        function getCurrentPage() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return parseInt(urlParams.get('page')) || 1;
+        }
     
+        // Highlight the current page in pagination
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentPage = getCurrentPage();
+            const paginationItems = document.querySelectorAll('#pagination .page-item');
+            paginationItems.forEach(item => {
+                const pageLink = item.querySelector('.page-link');
+                if (pageLink && parseInt(pageLink.textContent) === currentPage) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        });
+    </script>
         
 </body>
 

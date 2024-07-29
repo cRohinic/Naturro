@@ -15,6 +15,45 @@
     <link rel="shortcut icon" type="image/x-icon" href="adminassets/imgs/theme/favicon.svg">
     <!-- Template CSS -->
     <link href="adminassets/css/main.css" rel="stylesheet" type="text/css" />
+    <style>
+        /* Pagination Styles */
+    .page-pagination {
+        margin-top: 20px;
+    }
+    
+    .page-pagination .pagination {
+        justify-content: center;
+        padding-left: 0;
+        list-style: none;
+        border-radius: 0.25rem;
+    }
+    
+    .page-pagination .page-item {
+        display: inline;
+    }
+    
+    .page-pagination .page-item .page-link {
+        color: #000;
+        padding: 0.5rem 0.75rem;
+        margin: 0 5px;
+        text-decoration: none;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+    
+    .page-pagination .page-item.active .page-link {
+        background-color: #000;
+        color: #fff;
+        border-color: #000;
+    }
+    
+    .page-pagination .page-item .page-link:hover {
+        background-color: #f1f1f1;
+        border-color: #ddd;
+    }
+    
+    
+    </style>
 </head>
 
 <body>
@@ -261,7 +300,28 @@
 }
 
 </script>
-    
+<script>
+    // Function to get the current page from the URL
+    function getCurrentPage() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return parseInt(urlParams.get('page')) || 1;
+    }
+
+    // Highlight the current page in pagination
+    document.addEventListener('DOMContentLoaded', () => {
+        const currentPage = getCurrentPage();
+        const paginationItems = document.querySelectorAll('#pagination .page-item');
+        paginationItems.forEach(item => {
+            const pageLink = item.querySelector('.page-link');
+            if (pageLink && parseInt(pageLink.textContent) === currentPage) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+    });
+</script>
+
 </body>
 
 </html>

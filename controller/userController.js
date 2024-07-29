@@ -142,6 +142,9 @@ try{
        
          res.redirect('/home');
      }
+     if(userData.is_admin === true){
+        res.redirect("/login")
+     }
 }
 catch(error){
 console.log('verify login',error.message);

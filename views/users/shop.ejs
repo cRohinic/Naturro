@@ -721,9 +721,15 @@
                                                             </a>
                                                             <div class="action-link">
                                                                 <div class="action-link-left">
-                                                                    <a href="#"  data-bs-toggle="modal"
-                                                                        data-bs-target="#modalAddcart">Add to Cart</a>
+                                                                    <%if(product.countInStock===0){%>
+                                                                        <a class="text-danger">Out Of Stock</a>
+                                                                        
+                                                                    <%}else{%>
+                                                                    <a href='#' onclick="addProductCart('<%=product[i]._id%>')">Add to Cart</a>
+                                                                    <%}%>
                                                                 </div>
+                                                                    
+                                                                
                                                                 <div class="action-link-right">
                                                                     <a href="#" data-bs-toggle="modal"
                                                                         data-bs-target="#modalQuickview"><i
@@ -1236,6 +1242,8 @@
     <!-- Use the minified version files listed below for better performance and remove the files listed above -->
     <script src="assets/js/vendor/vendor.min.js"></script>
     <script src="assets/js/plugins/plugins.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
     <!-- Main JS -->
     <script src="assets/js/main.js"></script>
@@ -1330,6 +1338,57 @@
     </script>
 
 <script>
+     async function addProductCart(productId) {
+        event.preventDefault();
+            try {
+                let res = await fetch('/add-to-cart', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        productId
+                    })
+                });
+        
+                if (res.status === 400) {
+                    await Swal.fire({
+                        title: 'Error',
+                        text: 'Maximum quantity per person for this product has been reached',
+                        icon: 'error',
+                        showConfirmButton: true
+                    });
+                } else if (res.status === 409) {
+                    await Swal.fire({
+                        title: 'Error',
+                        text: 'Stock Limit Exceeded',
+                        icon: 'error',
+                        showConfirmButton: true
+                    });
+                } else if (res.status === 200) {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: "bottom",
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        background: "black",
+                        color: "white",
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer);
+                            toast.addEventListener('mouseleave', Swal.resumeTimer);
+                        }
+                    });
+        
+                    Toast.fire({
+                        icon: "success",
+                        title: "Added to cart"
+                    });
+                }
+            } catch (error) {
+                console.error('Error adding product to cart:', error);
+            }
+        }
 
 
   function searchproduct(category) {

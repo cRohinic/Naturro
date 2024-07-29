@@ -15,6 +15,45 @@
     <link rel="shortcut icon" type="image/x-icon" href="admin-assets/imgs/theme/favicon.svg">
     <!-- Template CSS -->
     <link href="admin-assets/css/main.css" rel="stylesheet" type="text/css" />
+    <style>
+        /* Pagination Styles */
+    .page-pagination {
+        margin-top: 20px;
+    }
+    
+    .page-pagination .pagination {
+        justify-content: center;
+        padding-left: 0;
+        list-style: none;
+        border-radius: 0.25rem;
+    }
+    
+    .page-pagination .page-item {
+        display: inline;
+    }
+    
+    .page-pagination .page-item .page-link {
+        color: #000;
+        padding: 0.5rem 0.75rem;
+        margin: 0 5px;
+        text-decoration: none;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+    
+    .page-pagination .page-item.active .page-link {
+        background-color: #000;
+        color: #fff;
+        border-color: #000;
+    }
+    
+    .page-pagination .page-item .page-link:hover {
+        background-color: #f1f1f1;
+        border-color: #ddd;
+    }
+    
+    
+    </style>
 </head>
 
 <body>
@@ -89,18 +128,7 @@
     <main class="main-wrap">
         <header class="main-header navbar">
             <div class="col-search">
-                <!-- <form class="searchform">
-                    <div class="input-group">
-                        <input list="search_terms" type="text" class="form-control" placeholder="Search term">
-                        <button class="btn btn-light bg" type="button"> <i class="material-icons md-search"></i></button>
-                    </div>
-                    <datalist id="search_terms">
-                        <option value="Products">
-                        <option value="New orders">
-                        <option value="Apple iphone">
-                        <option value="Ahmed Hassan">
-                    </datalist>
-                </form> -->
+               
             </div>
             <div class="col-nav">
                 <button class="btn btn-icon btn-mobile me-auto" data-trigger="#offcanvas_aside"> <i class="material-icons md-apps"></i> </button>
@@ -158,7 +186,6 @@
                             <thead>
                                 <tr>
                                     <th>S NO.</th>
-                                    <!-- <th>Coupon Name</th> -->
                                     <th>Coupon Code</th>
                                     <th>Description</th>
                                     <th>Discount In Purchase Amount</th>
@@ -174,7 +201,6 @@
                                 <% coupons.forEach((coupon, index) => { %>
                                     <tr>
                                         <td><%= index + 1 %></td>
-                                        <!-- <td><%= coupon.Name %></td> -->
                                         <td><%= coupon.code %></td>
                                         <td><%= coupon.description %></td>
                                         <td><%= coupon.discountPercentage %></td>
@@ -209,7 +235,7 @@
             
 
 <!-- Start Pagination -->
-<div class="page-pagination text-center" data-aos="fade-up" data-aos-delay="6">
+<!-- <div class="page-pagination text-center" data-aos="fade-up" data-aos-delay="6">
     <nav aria-label="Page navigation">
         <ul class="pagination">
             <li class="page-item active" aria-current="page">
@@ -229,10 +255,31 @@
             </li>    
         </ul>
     </nav>
+</div> -->
+
+
+<div class="page-pagination text-center" data-aos="fade-up" data-aos-delay="6">
+    <nav aria-label="Page navigation">
+        <ul class="pagination" id="pagination">
+            <li class="page-item" aria-current="page">
+                <a class="page-link" href="couponlist?page=1">1</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="couponlist?page=2">2</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="couponlist?page=3">3</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="couponlist?page=4">4</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="couponlist?page=5">5</a>
+            </li>
+          
+        </ul>
+    </nav>
 </div>
-
-
-
 
 
 
@@ -299,7 +346,28 @@
 }
 
 </script>
-    
+<script>
+    // Function to get the current page from the URL
+    function getCurrentPage() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return parseInt(urlParams.get('page')) || 1;
+    }
+
+    // Highlight the current page in pagination
+    document.addEventListener('DOMContentLoaded', () => {
+        const currentPage = getCurrentPage();
+        const paginationItems = document.querySelectorAll('#pagination .page-item');
+        paginationItems.forEach(item => {
+            const pageLink = item.querySelector('.page-link');
+            if (pageLink && parseInt(pageLink.textContent) === currentPage) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+    });
+</script>
+ 
 </body>
 
 </html>

@@ -941,7 +941,7 @@
                                 <% } %>
                             </div>
                         </div>
-                        <div class="page-pagination text-center" data-aos="fade-up" data-aos-delay="6">
+                        <!-- <div class="page-pagination text-center" data-aos="fade-up" data-aos-delay="6">
                             <nav aria-label="Page navigation">
                                 <ul class="pagination">
                                     <li class="page-item active" aria-current="page">
@@ -961,9 +961,31 @@
                                     </li>
                                 </ul>
                             </nav>
+                        </div> -->
+                        
+                        <div class="page-pagination text-center" data-aos="fade-up" data-aos-delay="6">
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination" id="pagination">
+                                    <li class="page-item" aria-current="page">
+                                        <a class="page-link" href="wallet?page=1">1</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="wallet?page=2">2</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="wallet?page=3">3</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="wallet?page=4">4</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="wallet?page=5">5</a>
+                                    </li>
+                                </ul>
+                            </nav>
                         </div>
                         
-
+                       
                         <div class="tab-pane fade" id="downloads">
                             <h4>Downloads</h4>
                             <div class="table_page table-responsive">
@@ -1442,6 +1464,27 @@
             // Form is valid
             return true;
         }
+    </script>
+     <script>
+        // Function to get the current page from the URL
+        function getCurrentPage() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return parseInt(urlParams.get('page')) || 1;
+        }
+    
+        // Highlight the current page in pagination
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentPage = getCurrentPage();
+            const paginationItems = document.querySelectorAll('#pagination .page-item');
+            paginationItems.forEach(item => {
+                const pageLink = item.querySelector('.page-link');
+                if (pageLink && parseInt(pageLink.textContent) === currentPage) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        });
     </script>
     
     
