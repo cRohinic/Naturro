@@ -20,9 +20,25 @@
 
 <!-- Cropper.js JavaScript -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
-<style>
-    
-</style>
+<style>.image-container {
+    display: inline-block;
+    position: relative;
+    margin: 5px;
+}
+.image-container img {
+    max-width: 100px;
+    max-height: 100px;
+}
+.close-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: red;
+    color: white;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}</style>
 </head>
 
 <body>
@@ -179,16 +195,16 @@
                             <h4>Basic</h4>
                         </div>
                         <div class="card-body">
-                            <!-- Assuming you have included the necessary HTML structure before this code -->
+                
 
-                            <form action="" method="post" enctype="multipart/form-data"
-                                onsubmit="return validateForm()">
+                            <form action=""  method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
                                 <div class="mb-4">
                                     <label for="product_name" class="form-label">Name</label>
                                     <input type="text" class="form-control" name="name" id="product_name"
                                         value="<%= proData.name %>">
                                     <p id="nameError" class="text-danger"></p>
                                 </div>
+                                <input type="hidden" id="productId" value="<%=proData._id%>">
                                 <div class="mb-4">
                                     <label for="product_description" class="form-label">Description</label>
                                     <input class="form-control" name="description" id="product_description"
@@ -222,39 +238,7 @@
                                     </div>
                                 </div>
                                 
-                                                  <!-- Category Section -->
-                                                  <!-- <div class="mb-4">
-                                                    <label for="category-dropdown">Category:</label>
-                                                    <select class="form-select" id="category-dropdown" name="category">
-                                                        <option value="">Select a category</option>
-                                                        <% if (cateData.length > 0) {
-                                                            for (let i = 0; i < cateData.length; i++) { %>
-                                                                <option value="<%= cateData[i]._id %>"><%= cateData[i].name %></option>
-                                                            <% }
-                                                        } %>
-                                                    </select>
-                                                    <div id="categoryError" class="text-danger"></div> 
-                                                </div>                              
-                               -->
-
-
-<!-- Category Section -->
-<!-- <div class="mb-4">
-    <label for="category-dropdown">Category:</label>
-    <select class="form-select" id="category-dropdown" name="category">
-        <option value="">Select a category</option>
-        <% if (cateData && cateData.length > 0) { 
-            const selectedCategory = (typeof selectedCategoryId !== 'undefined') ? selectedCategoryId : ''; 
-            cateData.forEach(category => { 
-                const isSelected = (category._id === selectedCategory) ? 'selected' : ''; 
-        %>
-                <option value="<%= category._id %>" <%= isSelected %>><%= category.name %></option>
-        <% 
-            });
-        } %>
-    </select>
-    <div id="categoryError" class="text-danger"></div> 
-</div> -->
+         
 <div class="mb-4">
     <label for="category-dropdown">Category:</label>
    
@@ -275,54 +259,28 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-                               
-<!-- Media Section for Images -->
-<!-- <div class="mb-4">
-    <label for="product_images" class="form-label">Images</label>
-    <% proData.images.forEach(image => { %>
-    <div class="image-container">
-        <img src="../uploads/productImages/<%= image %>" alt="Product Image" height="60" width="60">
-        <div class="image-actions">
-            <a href="/admin/deleteimage?id=<%= proData._id %>&delete=<%= image %>" class="delete-icon">
-                <span aria-hidden="true">&times;</span>
-            </a>
-        </div>
-    </div>
-    <% }) %>
-    <input type="file" class="form-control" name="images" id="product_images" multiple>
-    <small class="form-text text-muted">You can select multiple images.</small>
-    <p id="imagesError" class="text-danger"></p>
-</div> -->
-
-
 <div class="mb-4">
     <label for="product_images" class="form-label">Images</label>
-    <% proData.images.forEach(image => { %>
-    <div class="image-container">
-        <img src="../uploads/productImages/<%= image %>" alt="Product Image" height="60" width="60">
-        <div class="image-actions">
-            <a href="/admin/deleteimage?id=<%= proData._id %>&delete=<%= image %>" class="delete-icon">
-                <span aria-hidden="true">&times;</span>
-            </a>
+    <div id="existingImagesContainer">
+        <% proData.images.forEach(image => { %>
+        <div class="image-container">
+            <img src="../uploads/productImages/<%= image %>" alt="Product Image" height="60" width="60">
+            <div class="image-actions">
+                <a href="/admin/deleteimage?id=<%= proData._id %>&delete=<%= image %>" class="delete-icon">
+                    <span aria-hidden="true">&times;</span>
+                </a>
+            </div>
         </div>
+        <% }) %>
     </div>
-    <% }) %>
-    <input type="file" class="form-control" name="images" id="product_images" multiple onchange="displaySelectedImages(this)">
+    <input type="file" class="form-control" name="images" id="product_images" multiple onchange="handleFileInputChange(event)">
     <small class="form-text text-muted">You can select multiple images.</small>
     <p id="imagesError" class="text-danger"></p>
 </div>
+<div id="selectedImagesContainer"></div>
 
-<!-- Add this modal for image cropping -->
+
+
 <div id="cropModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9);">
     <div style="background-color: #fefefe; margin: 10% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 500px;">
         <img id="cropImage" src="" alt="Image to crop" style="max-width: 100%;">
@@ -376,44 +334,35 @@
     <!-- Main Script -->
     <script src="admin-assets/js/main.js" type="text/javascript"></script>
 
-    <!-- <script src="https://unpkg.com/cropperjs"></script> -->
-    
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-    const nameInput = document.getElementById('product_name');
-    const descriptionInput = document.getElementById('product_description');
-    const priceInput = document.getElementById('regular_price');
-    const discountPriceInput = document.getElementById('discount_price');
-    const stockInput = document.getElementById('stock_count');
-    const imagesInput = document.getElementById('product_images');
-
-    nameInput.addEventListener('input', function () {
-        if (this.value.trim() !== '') {
-            clearError('nameError');
-        }
-    });
-
-    descriptionInput.addEventListener('blur', () => validateInput('product_description', null, 'descriptionError', 'Description'));
-    priceInput.addEventListener('blur', () => validateInput('regular_price', /^\d+(\.\d{1,2})?$/, 'priceError', 'Price'));
-    discountPriceInput.addEventListener('blur', () => validateInput('discount_price', /^\d+(\.\d{1,2})?$/, 'discountPriceError', 'Discount Price'));
-    stockInput.addEventListener('blur', () => validateInput('stock_count', /^(100|[0-9]{1,2})$/, 'stockError', 'Stock'));
-    imagesInput.addEventListener('change', function(e) {
-        validateImages(e, 'imagesError');
-    });
+document.addEventListener('DOMContentLoaded', function () {
+    initializeImageHandling();
+    setupEventListeners();
 });
 
-function validateForm() {
-    const isValidName = validateInput('product_name', /^[A-Z][^\d\s]{0,98}$/, 'nameError', 'Product Name');
-    const isValidDescription = validateInput('product_description', null, 'descriptionError', 'Description');
-    const isValidPrice = validateInput('regular_price', /^\d+(\.\d{1,2})?$/, 'priceError', 'Price');
-    const isValidDiscountPrice = validateInput('discount_price', /^\d+(\.\d{1,2})?$/, 'discountPriceError', 'Discount Price');
-    const isValidStock = validateInput('stock_count', /^(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-9]{2}|300)$/, 'stockError', 'Stock');
-    const isValidCategory = validateCategory(); // Validate category
+function setupEventListeners() {
+    document.getElementById('product_name').addEventListener('input', () => validateInput('product_name', /^[A-Za-z][A-Za-z0-9\s]{0,98}$/, 'nameError', 'Product Name'));
+    document.getElementById('product_description').addEventListener('blur', () => validateInput('product_description', null, 'descriptionError', 'Description'));
+    document.getElementById('regular_price').addEventListener('blur', () => validateInput('regular_price', /^\d+(\.\d{1,2})?$/, 'priceError', 'Price'));
+    document.getElementById('discount_price').addEventListener('blur', () => validateInput('discount_price', /^\d+(\.\d{1,2})?$/, 'discountPriceError', 'Discount Price'));
+    document.getElementById('stock_count').addEventListener('blur', () => validateInput('stock_count', /^(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-9]{2}|300)$/, 'stockError', 'Stock'));
+    document.getElementById('product_images').addEventListener('change', handleFileInputChange);
+}
 
-    if (!isValidName || !isValidDescription || !isValidPrice || !isValidDiscountPrice || !isValidStock || !isValidCategory) {
+function validateForm() {
+    const validations = [
+        validateInput('product_name', /^[A-Za-z][A-Za-z0-9\s]{0,98}$/, 'nameError', 'Product Name'),
+        validateInput('product_description', null, 'descriptionError', 'Description'),
+        validateInput('regular_price', /^\d+(\.\d{1,2})?$/, 'priceError', 'Price'),
+        validateInput('discount_price', /^\d+(\.\d{1,2})?$/, 'discountPriceError', 'Discount Price'),
+        validateInput('stock_count', /^(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-9]{2}|300)$/, 'stockError', 'Stock'),
+        validateCategory()
+    ];
+
+    if (validations.some(v => !v)) {
         document.getElementById('mainError').innerText = 'Cannot submit form. Please fix errors.';
         return false;
     }
@@ -425,10 +374,10 @@ function validateInput(inputId, pattern, errorId, errorMessage) {
     const errorElement = document.getElementById(errorId);
 
     if (inputValue === '') {
-        errorElement.innerText = errorMessage + ' is required.';
+        errorElement.innerText = `${errorMessage} is required.`;
         return false;
-    } else if (!pattern.test(inputValue)) {
-        errorElement.innerText = 'Please enter a valid ' + errorMessage.toLowerCase() + '.';
+    } else if (pattern && !pattern.test(inputValue)) {
+        errorElement.innerText = `Please enter a valid ${errorMessage.toLowerCase()}.`;
         return false;
     } else {
         errorElement.innerText = '';
@@ -436,185 +385,17 @@ function validateInput(inputId, pattern, errorId, errorMessage) {
     }
 }
 
-
-
 function validateCategory() {
-            const categoryInputs = document.querySelectorAll('input[name="category"]:checked');
-            const categoryError = document.getElementById('categoryError');
-
-            if (categoryInputs.length === 0) {
-                categoryError.innerText = 'Please select at least one category.';
-                return false;
-            } else {
-                categoryError.innerText = '';
-                return true;
-            }
-        }
-function clearError(errorId) {
-    document.getElementById(errorId).textContent = '';
-}
-
-
-
-function displaySelectedImages(input) {
-    const selectedImagesContainer = document.getElementById('selectedImagesContainer');
-    selectedImagesContainer.innerHTML = '';
-    const files = input.files;
-   
-    for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const imageContainer = document.createElement('div');
-        imageContainer.classList.add('image-container');
-        const image = document.createElement('img');
-        image.src = URL.createObjectURL(file);
-        image.height = 60;
-        image.width = 60;
-        const closeButton = document.createElement('button');
-        closeButton.innerHTML = '&times;';
-        closeButton.classList.add('close-button');
-        closeButton.addEventListener('click', function() {
-            imageContainer.remove();
-            const newFileList = Array.from(input.files).filter(f => f !== file);
-            updateFileInput(input, newFileList);
-        });
-   
-        image.addEventListener('click', function() {
-            showCropperModal(file, imageContainer, input);
-        });
-        imageContainer.appendChild(image);
-        imageContainer.appendChild(closeButton);
-        selectedImagesContainer.appendChild(imageContainer);
-    }
-}
-
-function showCropperModal(file, imageContainer, input) {
-    const modal = document.getElementById('cropperModal');
-    const image = document.getElementById('image');
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        image.src = e.target.result;
-        modal.style.display = 'block';
-        const cropper = new Cropper(image, {
-            aspectRatio: 1,
-            viewMode: 1,
-            autoCropArea: 1,
-        });
-        document.getElementById('cropButton').addEventListener('click', function() {
-            const canvas = cropper.getCroppedCanvas();
-            canvas.toBlob(function(blob) {
-                const croppedFile = new File([blob], file.name, { type: 'image/png', lastModified: new Date().getTime() });
-                const croppedImage = document.createElement('img');
-                croppedImage.src = URL.createObjectURL(croppedFile);
-                croppedImage.height = 60;
-                croppedImage.width = 60;
-                imageContainer.innerHTML = '';
-                imageContainer.appendChild(croppedImage);
-               
-                const newFileList = Array.from(input.files).map(f => f === file ? croppedFile : f);
-                updateFileInput(input, newFileList);
-               
-                modal.style.display = 'none';
-                cropper.destroy();
-            }, 'image/png');
-        });
-        document.getElementById('cancelCropButton').addEventListener('click', function() {
-            modal.style.display = 'none';
-            cropper.destroy();
-        });
-    };
-    reader.readAsDataURL(file);
-}
-
-function updateFileInput(input, files) {
-    const dataTransfer = new DataTransfer();
-    files.forEach(file => {
-        dataTransfer.items.add(file);
-    });
-    input.files = dataTransfer.files;
-}
-
-function handleFileInputChange(event) {
-    const input = event.target;
-    displaySelectedImages(input);
-}
-
-
-function addImageToPage(url) {
-    const img = document.createElement('img');
-    img.src = url;
-    img.height = 60;
-    img.width = 60;
-    const imageContainer = document.createElement('div');
-    imageContainer.className = 'image-container';
-    imageContainer.appendChild(img);
-
-    const deleteIcon = document.createElement('a');
-    deleteIcon.href = '#';
-    deleteIcon.className = 'delete-icon';
-    deleteIcon.innerHTML = '<span aria-hidden="true">&times;</span>';
-    deleteIcon.onclick = function(e) {
-        e.preventDefault();
-        removeImage(imageContainer, url);
-    };
-
-    imageContainer.appendChild(deleteIcon);
-    document.getElementById('imagePreview').appendChild(imageContainer);
-}
-
-function removeImage(container, url) {
-    container.remove();
-    const index = croppedImages.findIndex(file => URL.createObjectURL(file) === url);
-    if (index > -1) {
-        croppedImages.splice(index, 1);
+    const categorySelect = document.querySelector('select[name="category"]');
+    const categoryError = document.getElementById('categoryError');
+    if (!categorySelect.value) {
+        categoryError.innerText = 'Please select a category.';
+        return false;
     } else {
-        const existingIndex = existingImages.indexOf(url);
-        if (existingIndex > -1) {
-            existingImages.splice(existingIndex, 1);
-        }
+        categoryError.innerText = '';
+        return true;
     }
 }
-
-function getFormData() {
-    const formData = new FormData();
-    croppedImages.forEach((file, index) => {
-        formData.append('newImages', file, file.name);
-    });
-    existingImages.forEach((url, index) => {
-        formData.append('existingImages', url);
-    });
-    return formData;
-}
-
-document.addEventListener('DOMContentLoaded', initializeImageHandling);
-
-document.getElementById('editForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const formData = getFormData();
-    // Example log for debugging
-    for (const pair of formData.entries()) {
-        console.log(pair[0], pair[1]);
-    }
-    // Uncomment the next line to actually submit the form
-    // this.submit();
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -38,6 +38,7 @@ const storage = multer.diskStorage({
         cb(null,'./uploads/productImages');
     },
     filename:function(req,file,cb){
+        console.log("filename",file.originalname)
         cb(null,file.originalname);
     }
 });

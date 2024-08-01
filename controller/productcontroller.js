@@ -209,7 +209,7 @@ const editProduct = async(req,res)=>{
             existingImages = existingProduct.images;
         }
 
-        // console.log('..........',req.body);
+        console.log('..........',req.body);
         let newImages = [];
         if(req.files && req.files.length){
             newImages = req.files.map(file => file.filename);
@@ -350,6 +350,10 @@ const updatepro = async (req, res) => {
               console.log('update product:', error.message);
    }
 };
+
+
+
+
 
 const showsearch = async (req, res) => {
     try {

@@ -550,12 +550,15 @@ const loadorder =async(req,res)=>{
           const page = parseInt(req.query.page) || 1;
           const totalproducts= await orderModel.countDocuments({});
           const totalPage=Math.ceil(totalproducts / perPage);
-        const order = await orderModel.find({}).populate({path:'user',model:'User'}).sort({createdAt:-1}).skip(perPage * (page -1)).limit(perPage);
+        const order = await orderModel.find({}).populate({path:'user',model:'User'}).skip(perPage * (page -1)).limit(perPage).sort({createdAt:-1});
         res.render('order',{order});
     }catch(error){
       console.log(error.message);
     }
 }
+
+
+
 
 const loadorderdetails = async(req,res)=>{
     try{
@@ -800,24 +803,51 @@ const categoryoffer=async(req,res)=>{
 
 
 
-const loadsales = async(req,res)=>{
-    try{
-      let product=await  ProductModel.find({list:true})
-        const perPage=8;
-            const page = parseInt(req.query.page) || 1;
-            const totalproducts= await ProductModel.countDocuments({});
-            const totalPage=Math.ceil(totalproducts / perPage);
-    const order=await orderModel.find({status: "Delivered"}).populate('user').skip(perPage * (page-1)).limit(perPage).sort({_id:-1});
-    console.log(order)
-    res.render('adminsales',{order:order.reverse()});
-    }
-    catch(err){
-        console.log('sales details',err.message);
-    }
-    }
+// const loadsales = async(req,res)=>{
+//     try{
+//       let product=await  ProductModel.find({list:true})
+//         const perPage=8;
+//             const page = parseInt(req.query.page) || 1;
+//             const totalproducts= await ProductModel.countDocuments({});
+//             const totalPage=Math.ceil(totalproducts / perPage);
+//     const order=await orderModel.find({status: "Delivered"}).populate('user').skip(perPage * (page-1)).limit(perPage).sort({_id:-1});
+//     console.log(order)
+//     res.render('adminsales',{order:order.reverse()});
+//     }
+//     catch(err){
+//         console.log('sales details',err.message);
+//     }
+//     }
     
 
     
+const loadsales = async (req, res) => {
+  try {
+    // Fetch products with list:true (not used further in the code, consider its purpose)
+    let products = await ProductModel.find({ list: true });
+
+    const perPage = 8;
+    const page = parseInt(req.query.page) || 1;
+
+    // Get the total count of products (used for pagination)
+    const totalProducts = await ProductModel.countDocuments({ list: true });
+    const totalPages = Math.ceil(totalProducts / perPage);
+
+    // Fetch orders with status "Delivered", populate 'user', and apply pagination and sorting by orderDate in descending order
+    const orders = await orderModel
+      .find({ status: "Delivered" })
+      .populate('user')
+      .skip(perPage * (page - 1))
+      .limit(perPage)
+      .sort({ orderDate: -1 });  // Sort by orderDate in descending order
+
+    // Render the adminsales view with the orders
+    res.render('adminsales', { order: orders, totalPages, currentPage: page });
+  } catch (err) {
+    console.log('sales details', err.message);
+    res.status(500).send('Internal Server Error');
+  }
+};
 
     
 
@@ -1158,119 +1188,184 @@ function getMonthName(month) {
 }
 
       
-      const generatePDF = (salesData, title, res) => {
-          try {
-              let doc = new PDFDocument();
-              res.setHeader('Content-Type', 'application/pdf');
-              res.setHeader('Content-Disposition', `attachment; filename="${title.toLowerCase().replace(/\s+/g, "_")}.pdf"`);
-              doc.pipe(res);
-      
-              const today = new Date().toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-              });
-              doc.fontSize(20).text(`${title} - ${today}`, { align: 'center' });
-              doc.moveDown(2);
-      
-              for (const data of salesData) {
-                  doc.moveDown(2);
-                  doc.text(data.period, { align: 'left' });
-      
-                  const tableHeaders = ['Metric', 'Value'];
-                  const columnStartPositions = [50, 300];
-                  const fontSize = 12;
-      
-                  doc.font('Helvetica-Bold').fontSize(fontSize);
-                  tableHeaders.forEach((header, index) => {
-                      doc.text(header, columnStartPositions[index], doc.y, { width: 200, align: 'center' });
-                      doc.strokeColor('black').lineWidth(1);
-                  });
-      
-                  doc.font('Helvetica').fontSize(fontSize);
-                  const tableRows = [
-                      ['Total Revenue', `INR ${data.totalRevenue}`],
-                      ['Total Orders', data.totalOrders],
-                   
-                      ['Average Sales', `${data.averageSales ? data.averageSales.toFixed(2) : 'N/A'}%`],
-                      ['Average Revenue', `${data.averageRevenue ? data.averageRevenue.toFixed(2) : 'N/A'}`],
-                  ];
-      
-                  data.totalOrder.forEach(order => {
-                      if (order.coupon !== 'nil') {
-                          tableRows.push([`Coupon: ${order.coupon}`, `INR ${order.discountPrice}`]);
-                      }
-                  });
-      
-                  const overallDiscountPrice = data.totalOrder.reduce((total, order) => total + order.discountPrice, 0);
-                  tableRows.push(['Overall Discount Price', `INR ${overallDiscountPrice}`]);
-      
-                  tableRows.forEach((row, rowIndex) => {
-                      row.forEach((text, index) => {
-                          doc.text(text, columnStartPositions[index], doc.y, { width: 200, align: 'center' });
-                      });
-                      doc.moveDown(0.5);
-                  });
-              }
-      
-              doc.end();
-          } catch (error) {
-              console.error('Error generating PDF:', error.message);
-              res.status(500).send('Error generating PDF.');
-          }
-      };
-        
 
-      const generateExcel = async (req, res, next) => {
+      // const express = require('express');
+      // const app = express();
+      // // const PDFDocument = require('pdfkit');
+      // const path = require('path');
+      
+      // // Your other middleware and route setups
+      
+      // app.get('/generate-pdf', (req, res) => {
+      //   const salesData = [
+      //     // Your sales data array here
+      //   ];
+      //   const title = "Sales Report";
+      //   generatePDF(salesData, title, res);
+      // });
+      
+    //   const generatePDF = (salesData, title, res) => {
+    //     try {
+    //       let doc = new PDFDocument({ margin: 30 });
+    //       res.setHeader('Content-Type', 'application/pdf');
+    //       res.setHeader('Content-Disposition', `attachment; filename="${title.toLowerCase().replace(/\s+/g, "_")}.pdf"`);
+    //       doc.pipe(res);
+      
+    //       const today = new Date().toLocaleDateString('en-US', {
+    //         year: 'numeric',
+    //         month: 'long',
+    //         day: 'numeric',
+    //       });
+    //       doc.fontSize(20).text(`${title} - ${today}`, { align: 'center' });
+    //       doc.moveDown(2);
+      
+    //       // Table headers
+    //       const tableHeaders = ['Index', 'Order ID', 'User Name', 'Order Date', 'Bill Total', 'Status', 'Payment Method', 'Coupon'];
+    //       const columnWidths = [30, 80, 100, 100, 80, 100, 100, 100];
+    //       const fontSize = 10;
+    //       const rowHeight = 20;
+    //       const headerBgColor = '#cccccc';
+    //       const cellPadding = 5;
+      
+    //       // Draw table headers with background color
+    //       let y = doc.y;
+    //       doc.font('Helvetica-Bold').fontSize(fontSize).fillColor('black');
+    //       tableHeaders.forEach((header, index) => {
+    //         doc
+    //           .rect(30 + columnWidths.slice(0, index).reduce((a, b) => a + b, 0), y, columnWidths[index], rowHeight)
+    //           .fillAndStroke(headerBgColor, 'black')
+    //           .fillColor('black')
+    //           .text(header, 30 + columnWidths.slice(0, index).reduce((a, b) => a + b, 0) + cellPadding, y + cellPadding, {
+    //             width: columnWidths[index] - cellPadding * 2,
+    //             align: 'center',
+    //             valign: 'center',
+    //           });
+    //       });
+    //       doc.moveDown(rowHeight / 10);
+      
+    //       doc.font('Helvetica').fontSize(fontSize).fillColor('black');
+      
+    //       // Draw table rows
+    //       salesData.forEach((data, index) => {
+    //         y = doc.y;
+    //         [
+    //           index + 1,
+    //           `#${data.oId}`,
+    //           // data.user.name,
+    //           new Date(data.orderDate).toLocaleDateString(),
+    //           `INR ${data.billTotal}`,
+    //           data.status,
+    //           data.paymentMethod,
+    //           data.coupon
+    //         ].forEach((text, columnIndex) => {
+    //           doc
+    //             .rect(30 + columnWidths.slice(0, columnIndex).reduce((a, b) => a + b, 0), y, columnWidths[columnIndex], rowHeight)
+    //             .stroke()
+    //             .fillColor('black')
+    //             .text(text, 30 + columnWidths.slice(0, columnIndex).reduce((a, b) => a + b, 0) + cellPadding, y + cellPadding, {
+    //               width: columnWidths[columnIndex] - cellPadding * 2,
+    //               align: 'center',
+    //               valign: 'center',
+    //             });
+    //         });
+    //         doc.moveDown(rowHeight / 10);
+    //       });
+      
+    //       // Draw the bottom line of the table
+    //       doc.lineWidth(0.5).moveTo(30, doc.y - 0.5).lineTo(570, doc.y - 0.5).stroke();
+      
+    //       doc.end();
+    //     } catch (error) {
+    //       console.error('Error generating PDF:', error.message);
+    //       res.status(500).send('Error generating PDF.');
+    //     }
+    //   };
+      
+    //   // Start the server
+    //   app.listen(3000, () => {
+    //     console.log('Server is running on port 3000');
+    //   });
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+     const generateExcel = async (req, res, next) => {
         try {
-          const salesDatas = await salesReport(365);
-          const workbook = new ExcelJS.Workbook();
-          const worksheet = workbook.addWorksheet('Sales Report');
-          const overallDiscountPrice=salesDatas.totalOrder.reduce((total, order) => total + order.discountPrice, 0);
-          const couponcode = salesDatas.totalOrder.map(order => { return order.coupon;});
-          const couponCodesString = couponcode.join(', ');
-       
-          worksheet.columns = [
-            { header: 'Total Revenue', key: 'totalRevenue', width: 15 },
-            { header: 'Total Orders', key: 'totalOrders', width: 15 },
-            { header: 'Total Count In Stock', key: 'totalCountInStock', width: 15 },
-            { header: 'Average Sales', key: 'averageSales', width: 15 },
-            { header: 'Average Revenue', key: 'averageRevenue', width: 15 },
-            { header: 'Revenue', key: 'Revenue', width: 15 },
-            { header: 'Applied coupon code', key: 'couponCodesString', width: 15 },
-            { header: 'overall discount price', key: 'overalldiscountprice', width: 15 }
-          ];
-          
-        
-    
-    
-    
-          worksheet.addRow({
-            totalRevenue: salesDatas.totalRevenue,
-            totalOrders: salesDatas.totalOrders,
-            totalCountInStock: salesDatas.totalCountInStock,
-            averageSales: salesDatas.averageSales ? salesDatas.averageSales.toFixed(2) : 'N/A',
-            averageRevenue: salesDatas.averageRevenue ? salesDatas.averageRevenue.toFixed(2) : 'N/A',
-            Revenue: salesDatas.Revenue,
-            couponCodesString:couponCodesString,
-            overalldiscountprice:overallDiscountPrice
+            const salesDatas = await salesReport(365);
             
-            
-          });
-          
-        
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet('Sales Report');
     
-      
-          res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-          res.setHeader('Content-Disposition', 'attachment; filename="sales_report.xlsx"');
-      
-          workbook.xlsx.write(res).then(() => res.end());
+            // Calculate overall discount price and concatenate coupon codes
+            const overallDiscountPrice = salesDatas.totalOrder.reduce((total, order) => total + order.discountPrice, 0);
+            const couponcode = salesDatas.totalOrder.map(order => order.coupon);
+            const couponCodesString = couponcode.join(', ');
+    
+            // Define columns
+            worksheet.columns = [
+                { header: 'Total Revenue', key: 'totalRevenue', width: 20 },
+                { header: 'Total Orders', key: 'totalOrders', width: 15 },
+                { header: 'Total Count In Stock', key: 'totalCountInStock', width: 20 },
+                { header: 'Average Sales', key: 'averageSales', width: 15 },
+                { header: 'Average Revenue', key: 'averageRevenue', width: 20 },
+                { header: 'Revenue', key: 'revenue', width: 15 },
+                { header: 'Applied Coupon Codes', key: 'couponCodes', width: 30 },
+                { header: 'Overall Discount Price', key: 'overallDiscountPrice', width: 25 }
+            ];
+    
+            // Add row with sales data
+            worksheet.addRow({
+                totalRevenue: salesDatas.totalRevenue,
+                totalOrders: salesDatas.totalOrders,
+                totalCountInStock: salesDatas.totalCountInStock,
+                averageSales: salesDatas.averageSales ? salesDatas.averageSales.toFixed(2) : 'N/A',
+                averageRevenue: salesDatas.averageRevenue ? salesDatas.averageRevenue.toFixed(2) : 'N/A',
+                revenue: salesDatas.Revenue,
+                couponCodes: couponCodesString,
+                overallDiscountPrice: overallDiscountPrice
+            });
+    
+            // Set headers and response for file download
+            res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            res.setHeader('Content-Disposition', 'attachment; filename="sales_report.xlsx"');
+    
+            await workbook.xlsx.write(res);
+            res.end();
         } catch (error) {
-          console.log(error.message);
-          return res.status(500);
+            console.log(error.message);
+            return res.status(500).send('Error generating Excel report');
         }
-      };
-    
+    };
     
       
 module.exports = {
@@ -1291,7 +1386,7 @@ module.exports = {
    loadsales ,
     dateFilter ,
     sortDate ,
-    generatePDF,
+    // generatePDF,
     pdf,
     generateExcel,
     categoryoffer,

@@ -672,7 +672,7 @@ function handleFileInputChange(event) {
 });
 
 function validateForm() {
-    const isValidName = validateInput('product_name', /^[A-Z][^\d\s]{0,98}$/, 'nameError', 'Product Name');
+    const isValidName = validateInput('product_name',  /^[A-Z][a-zA-Z]*\s[A-Z][a-zA-Z]*$/, 'nameError', 'Product Name');
     const isValidDescription = validateInput('product_description',null, 'descriptionError', 'Description');
     const isValidPrice = validateInput('regular_price', /^\d+(\.\d{1,2})?$/, 'priceError', 'Price');
     const isValidDiscountPrice = validateInput('discount_price', /^\d+(\.\d{1,2})?$/, 'discountPriceError', 'Discount Price');
