@@ -954,9 +954,9 @@ const newArrivals=async(req,res)=>{
                 },
               
                 "products": order.items.map(item => ({
-                  "description": item.name,
+                  "name": item.name,
                   "quantity": item.quantity,
-                  "price": item.price,
+                  "price": item.productPrice ,
                  
               })),
               "information": {

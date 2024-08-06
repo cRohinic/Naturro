@@ -626,8 +626,8 @@
                 <h6>Order ID:<%=order.oId%></h6>
                 <br>
                 <h6>Order Date:<%= new Date(order.orderDate).toLocaleDateString()  %></h6>
-                <%if(order.paymentStatus==='Pending'){%>
-                    <!-- <p class="text-danger">Payment : Pending</p> -->
+                <%if(order.paymentStatus==='Pending' && order.status==='Pending'){%>
+                    <p class="text-danger">Payment : Pending</p>
                     <form action="" method="post">
                     <label class="radio-default d-flex">
 
@@ -1172,7 +1172,10 @@
     <!-- Main JS -->
     <script src="assets/js/main.js"></script>
     <script>
-        function cancelOrder(oId) {
+       
+
+
+       function cancelOrder(oId) {
     swal.fire({
         title: 'Reason for Cancellation:',
         input: 'text',
@@ -1205,11 +1208,13 @@
                         text: 'Your cancellation request has been submitted successfully!'
                     });
                     return response.json();
+                    window.location.reload();
                 } else {
                     throw new Error('Network response was not ok.');
                 }
             })
             .catch((error) => {
+
                 console.error('Fetch Error:', error);
             });
         }

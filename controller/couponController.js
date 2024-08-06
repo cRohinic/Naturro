@@ -127,6 +127,58 @@ const toggleCouponStatus = async (req, res) => {
     }
 };
 
+// const Couponcart = async (req, res) => {
+//     try {
+//         const code = req.query.code;
+//         const coupon = await couponModel.findOne({ code: code });
+//         const user = await User.findById(req.session.user);
+//         const cart = await cartModel.findOne({ owner: user._id });
+
+      
+//         if (!coupon) {
+//             return res.status(404).send('Coupon not found');
+//         }
+
+//         if (!user) {
+//             return res.status(404).send('User not found');
+//         }
+//         if (coupon.maxUsers === 0 || coupon.usersUsed.includes(user._id) || cart.isApplied) {
+//             return res.status(400).send('Coupon not applicable');
+//         }
+
+//         if (!cart) {
+//             return res.status(404).send('Cart not found');
+//         }
+//         let discountAmount = 0;
+
+//         if (cart.billTotal <= 500) {
+//             discountAmount = (coupon.discountPercentage / 100) * cart.billTotal.toFixed();
+//             cart.billTotal -= discountAmount;
+//         } else {
+//             discountAmount = (coupon.discountPercentage / 100) * cart.billTotal.toFixed();
+//             cart.billTotal *= (1 - coupon.discountPercentage / 100);
+//         }
+//         cart.billTotal = Number(cart.billTotal.toFixed());
+
+
+//         cart.isApplied=true;
+//         cart.discountPrice=discountAmount.toFixed();
+//         cart.coupon=code;
+//         await cart.save();
+
+        
+//         coupon.usersUsed.push(user._id);
+//         coupon.maxUsers--;
+//         await coupon.save();
+
+//         res.status(200).send('Coupon applied successfully');
+//     } catch (error) {
+//         console.error('Coupon cart error:', error.message);
+//         res.status(500).send('Internal server error');
+//     }
+// };
+
+
 const Couponcart = async (req, res) => {
     try {
         const code = req.query.code;
@@ -134,7 +186,6 @@ const Couponcart = async (req, res) => {
         const user = await User.findById(req.session.user);
         const cart = await cartModel.findOne({ owner: user._id });
 
-      
         if (!coupon) {
             return res.status(404).send('Coupon not found');
         }
@@ -142,6 +193,7 @@ const Couponcart = async (req, res) => {
         if (!user) {
             return res.status(404).send('User not found');
         }
+
         if (coupon.maxUsers === 0 || coupon.usersUsed.includes(user._id) || cart.isApplied) {
             return res.status(400).send('Coupon not applicable');
         }
@@ -149,27 +201,30 @@ const Couponcart = async (req, res) => {
         if (!cart) {
             return res.status(404).send('Cart not found');
         }
-        let discountAmount = 0;
 
+        let discountAmount = 0;
         if (cart.billTotal <= 500) {
-            discountAmount = (coupon.discountPercentage / 100) * cart.billTotal.toFixed();
+            discountAmount = (coupon.discountPercentage / 100) * cart.billTotal;
             cart.billTotal -= discountAmount;
         } else {
-            discountAmount = (coupon.discountPercentage / 100) * cart.billTotal.toFixed();
+            discountAmount = (coupon.discountPercentage / 100) * cart.billTotal;
             cart.billTotal *= (1 - coupon.discountPercentage / 100);
         }
-        cart.billTotal = Number(cart.billTotal.toFixed());
+        cart.billTotal = Number(cart.billTotal.toFixed(2));
 
-
-        cart.isApplied=true;
-        cart.discountPrice=discountAmount.toFixed();
-        cart.coupon=code;
+        cart.isApplied = true;
+        cart.discountPrice = discountAmount.toFixed(2);
+        cart.coupon = code;
         await cart.save();
 
-        
         coupon.usersUsed.push(user._id);
         coupon.maxUsers--;
         await coupon.save();
+
+        // Remove the coupon if it has been used once
+        if (coupon.maxUsers === 0) {
+            await couponModel.deleteOne({ code: code });
+        }
 
         res.status(200).send('Coupon applied successfully');
     } catch (error) {
@@ -177,6 +232,18 @@ const Couponcart = async (req, res) => {
         res.status(500).send('Internal server error');
     }
 };
+
+
+
+
+
+
+
+
+
+
+
+
 
 const removeCoupon=async(req,res)=>{
     try{

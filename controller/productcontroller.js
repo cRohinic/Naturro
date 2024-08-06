@@ -25,54 +25,20 @@ const loadProduct = async(req,res)=>{
 };
 
 
-// // const addProduct = async(req,res)=>{
-//     try{
-       
-//         const images = req.files?req.files.map(file=> file.filename) :[] ;
-//         const product = new productModel({
-//             name:req.body.name,
-//             description :req.body.description,
-//             images:images,
-//             countInStock:req.body.stock,
-//             category: req.body.category,
-//             price: req.body.price,
-//             discountPrice: req.body.discountPrice,
-//         });
 
-//         const savedProduct = await product.save();
-        
-        
-        
-//         const categoryDetails = await categoryModel.find();
-//         if(savedProduct){
-//             res.redirect('/admin/product');
-//         }else{
-//             res.render('addProduct',{cate:categoryDetails,message:"Error Saaving Product"});
-//         }
-//         }catch(error){
-//             console.error('Error saving product:',error);
-
-//             res.status(500).send('Error saving product');
-//         }
-
-
-//     };
-
-// 
 
 const addProduct = async (req, res) => {
     try {
         const images = [];
-        const outputDirectory = path.join(__dirname, '../uploads/productImages/'); // Replace with your actual public directory
+        const outputDirectory = path.join(__dirname, '../uploads/productImages/'); 
 
-        // Ensure the output directory exists
         if (!fs.existsSync(outputDirectory)) {
             fs.mkdirSync(outputDirectory, { recursive: true });
         }
 
         if (req.files) {
             for (const file of req.files) {
-                const inputPath = file.path; // Assuming multer saves files in `req.files` with a `path` property
+                const inputPath = file.path; 
                 const outputFilename = `resized-${file.filename}`;
                 const outputPath = path.join(outputDirectory, outputFilename);
 

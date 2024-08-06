@@ -131,9 +131,9 @@ const loadcheckout =async(req,res)=>{
                 productId: item.productId._id,
                 image: item.productId.images[0],
                 name: item.productId.name,
-                productPrice: item.productId.price,
+                productPrice: item.productId.price-item.productId.discountPrice,
                 quantity: item.quantity,
-                price: item.price
+                price: (item.productId.price-item.productId.discountPrice)*item.quantity
             })
         }
 
@@ -270,9 +270,9 @@ const loadorderdetails = async (req, res) => {
                 productId: item.productId._id,
                 image: item.productId.images[0],
                 name: item.productId.name,
-                productPrice: item.productId.price,
+                productPrice: item.productId.price-item.productId.discountPrice,
                 quantity: item.quantity,
-                price: item.price
+                price: (item.productId.price-item.productId.discountPrice)*item.quantity
             })
         }
 
@@ -389,9 +389,9 @@ console.log(arr[0],'delivvvvvvveeeeeeeeeerrrrrrrrrr');
                   productId: item.productId._id,
                   image: item.productId.images[0],
                   name: item.productId.name,
-                  productPrice: item.productId.price,
+                  productPrice: item.productId.price-item.productId.discountPrice,
                   quantity: item.quantity,
-                  price: item.price
+                  price: (item.productId.price-item.productId.discountPrice)*item.quantity
               })
           }
 
@@ -420,7 +420,7 @@ console.log(arr[0],'delivvvvvvveeeeeeeeeerrrrrrrrrr');
 
 const payment = async(req,res)=>{
   try{
-    console.log('hiiiiiiiii');
+   
       const id = req.session.orderId;
       const order = await orderModel.findOne({_id:id}).populate({ path: 'items.productId', model: 'Products' } );
       console.log(order,"order");
@@ -445,7 +445,7 @@ const Instance = new razorpay({
 
 const revisePayment = async (req, res) => {
     try {
-      console.log('hiiiiii');
+      
       const orderId = req.body.orderId;
       const orders = await orderModel.findOne({ oId: orderId });
   
@@ -477,77 +477,26 @@ const revisePayment = async (req, res) => {
 
 const failedPayment = async (req, res) => {
     try {
-        
-       
-        const address = req.body.address || 'home';
-        const user = await User.findById(req.session.user );
-        
-        if (!user) {
-            return res.status(404).json({ success: false, message: "User not found" });
-        }
-        const OrderAddress = await addressModel.findOne({ user: req.session.user });
-  
-        if (!OrderAddress) {
-          return res.status(400).json({ message: "Address not found" });
-        }
+        const orderId = req.body.orderId;
+        console.log(orderId,'failed payment');
+        const orders = await orderModel.findById(orderId);
     
-        const addressdetails = OrderAddress.addresses.find(item => item.addressType === address);
-    
-        if (!addressdetails) {
-         
+        if (!orders) {
+          return res.status(404).json({ message: "Order not found" });
         }
-        const cart = await cartModel.findOne({ owner: req.session.user }).populate({path:'items.productId',model:'Products'});
-        
-        if (!cart) {
-            return res.status(404).json({ success: false, message: "Cart not found" });
-        }
-  
-        const selectedItems = cart.items;
-  
-  
-        const order_id = await generateUniqueOrderID();
-        const orderData = new orderModel({
-            user: req.session.user,
-            
-            
-            billTotal: cart.billTotal, 
-            oId: order_id, 
-            paymentStatus: "Pending",
-            paymentMethod: 'razorpay',
-            deliveryAddress: addressdetails, 
-            coupon: cart.coupon,
-            discountPrice: cart.discountPrice
-        });
-  
-        for (const item of selectedItems) {
-          orderData.items.push({
-            productId:item.productId._id,
-            image:item.productId.images[0],
-            name:item.productId.name,
-            productPrice:item.productId.price,
-            quantity:item.quantity,
-            price:item.price
-          })
-      }
-  
-        await orderData.save();
-      
-       
-        cart.items = [];
-        cart.isApplied=false;
-        await cart.save();
-  
-        return res.json({ success: true, message: "Order processed successfully", orderId: order_id });
+
+        orders.paymentStatus='Pending';
+        await orders.save();
+        res.status(200).json({ orderId});
     } catch (error) {
         console.error('Failed Payment:', error);
         return res.status(500).json({ success: false, message: "Failed to process order. Please try again later" });
     }
   };
-  
 const orderCancelled=async(req,res)=>{
     try {
         const id=req.query.id;
-        const order=await orderModel.findOne({oId:id})
+        const order=await orderModel.findById(id)
         res.render('ordercancelled',{order})
     } catch (error) {
         console.log(error.message);

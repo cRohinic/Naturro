@@ -261,13 +261,14 @@
                                             <td><b><%= orderItem.user.name %></b></td>
                                             
                                             <td>
-                                                <% let billTotal = 0; %>
+                                                 <% let billTotal = 0; %> 
+                                             
                                                 <% orderItem.items.forEach((item, itemIndex) => { %>
                                                     <%= item.name %> (Quantity: <%= item.quantity %>, Price: INR <%= item.price %>)
                                                     <% if (itemIndex < orderItem.items.length - 1) { %>
                                                         ,<br>
                                                     <% } %>
-                                                    <% billTotal += item.quantity * item.price; %>
+                                                    <% billTotal +=  item.price; %>
                                                 <% }) %>
                                             </td>
                                             <td>INR <%= billTotal %></td>

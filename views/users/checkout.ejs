@@ -1247,7 +1247,10 @@
             data.addressType = a_id;
             data.paymentOption = paymentOption;
             console.log(data);
-    
+
+            const proceedButton = document.getElementById('proceedButton');
+            proceedButton.disabled = true;
+
             if (paymentOption === "razorpay") {
                 const res = await fetch('/razorpay', {
                     method: 'POST',
@@ -1290,6 +1293,7 @@
                 var rzp1 = new Razorpay(options);
                      rzp1.open();
                 rzp1.on('payment.failed', function (response) {
+                    proceedButton.disabled = false;
                     const paymentFailureData = {
                         razorpay_payment_id: response.error.metadata.payment_id,
                         razorpay_order_id: response.error.metadata.order_id,
@@ -1302,16 +1306,15 @@
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify(paymentFailureData)
+                        body: JSON.stringify({
+                            orderId:resurl})
                     })
                     .then(response => response.json())
                     .then(data => {
-                        if (data.success) {
-                            console.log("Payment failure logged successfully");
+                    console.log(data,'dataaaaaa');
+                       
                             window.location.href = `/ordercancelled?id=${data.orderId}`;
-                        } else {
-                            console.error("Failed to log payment failure");
-                        }
+                       
                     })
                     .catch(error => console.error('Error logging payment failure:', error));
                 });
@@ -1334,12 +1337,5 @@
             }
         });
     </script>
-    
-       
-
-
-
 </body>
-
-
 </html>
