@@ -333,7 +333,7 @@
                                 </div>
                             
                                 <!-- Category Section -->
-                                <div class="mb-4">
+                                <!-- <div class="mb-4">
                                     <label for="category-dropdown">Category:</label>
                                     <select class="form-select" id="category-dropdown" name="category">
                                         <option value="">Select a category</option>
@@ -343,10 +343,21 @@
                                             <% }
                                         } %>
                                     </select>
-                                    <div id="categoryError" class="text-danger"></div> <!-- Placeholder for category error -->
+                                    <div id="categoryError" class="text-danger"></div> 
                                 </div>
-                            
-                               
+                             -->
+                             <div class="mb-4">
+                                <label for="category-dropdown">Category:</label>
+                                <select class="form-select" id="category-dropdown" name="category">
+                                    <option value="">Select a category</option>
+                                    <% if (category.length > 0) {
+                                        for (let i = 0; i < category.length; i++) { %>
+                                            <option value="<%= category[i]._id %>"><%= category[i].name %></option>
+                                        <% }
+                                    } %>
+                                </select>
+                                <div id="categoryError" class="text-danger"></div>
+                            </div>
                                 <!-- <div class="mb-4">
                                     <label for="product_images" class="form-label">Images</label>
                                     <div id="selectedImagesContainer"></div>
@@ -649,37 +660,33 @@ function handleFileInputChange(event) {
 
 
 
-
-        document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
     const nameInput = document.getElementById('product_name');
     const descriptionInput = document.getElementById('product_description');
     const priceInput = document.getElementById('regular_price');
     const discountPriceInput = document.getElementById('discount_price');
     const stockInput = document.getElementById('stock_count');
     const imagesInput = document.getElementById('product_images');
+    const categoryDropdown = document.getElementById('category-dropdown');
 
-    // Removed the brandInput since it's not part of your form
     nameInput.addEventListener('blur', () => validateInput('product_name', /^[A-Z][a-zA-Z\s]*$/, 'nameError', 'Product Name'));
-    descriptionInput.addEventListener('blur', () => validateInput('product_description',/^[A-Z][a-zA-Z\s]{0,39}$/, 'descriptionError', 'Description'));
-    // Adjusted the regex for price and discountPrice to your requirements
+    descriptionInput.addEventListener('blur', () => validateDescription('product_description',/^[A-Z][a-zA-Z\s]{0,39}$/, 'descriptionError', 'Description'));
     priceInput.addEventListener('blur', () => validateInput('regular_price', /^\d+(\.\d{1,2})?$/, 'priceError', 'Price'));
     discountPriceInput.addEventListener('blur', () => validateInput('discount_price', /^\d+(\.\d{1,2})?$/, 'discountPriceError', 'Discount Price'));
     stockInput.addEventListener('blur', () => validateInput('stock_count', /^(100|[0-9]{1,2})$/, 'stockError', 'Stock'));
-
     imagesInput.addEventListener('change', function(e) {
         validateImages(e, 'imagesError');
     });
+    categoryDropdown.addEventListener('change', validateCategory);
 });
-
 
 function validateForm() {
     const isValidName = validateInput('product_name',  /^[A-Z][a-zA-Z\s]*$/, 'nameError', 'Product Name');
     const isValidDescription = validateDescription('product_description', /^[A-Z][a-zA-Z\s]{0,39}$/, 'descriptionError', 'Description');
-
     const isValidPrice = validateInput('regular_price', /^\d+(\.\d{1,2})?$/, 'priceError', 'Price');
     const isValidDiscountPrice = validateInput('discount_price', /^\d+(\.\d{1,2})?$/, 'discountPriceError', 'Discount Price');
     const isValidStock = validateInput('stock_count', /^(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-9]{2}|300)$/, 'stockError', 'Stock');
-    const isValidCategory = validateCategory(); // Validate category
+    const isValidCategory = validateCategory();
 
     if (!isValidName || !isValidDescription || !isValidPrice || !isValidDiscountPrice || !isValidStock || !isValidCategory) {
         document.getElementById('mainError').innerText = 'Cannot submit form. Please fix errors.';
@@ -696,11 +703,7 @@ function validateInput(inputId, pattern, errorId, errorMessage) {
         errorElement.innerText = errorMessage + ' is required.';
         return false;
     } else if (!pattern.test(inputValue)) {
-        if (inputId === 'product_name') {
-            errorElement.innerText = 'Please enter a valid ' + errorMessage.toLowerCase() + '. Only letters are allowed.';
-        } else {
-            errorElement.innerText = 'Please enter a valid ' + errorMessage.toLowerCase() + '.';
-        }
+        errorElement.innerText = 'Please enter a valid ' + errorMessage.toLowerCase() + '.';
         return false;
     } else {
         errorElement.innerText = '';
@@ -724,31 +727,26 @@ function validateDescription(inputId, pattern, errorId, errorMessage) {
     }
 }
 
-
-
-
-
-
 function validateImages(e, errorId) {
-    var fileInput = e.target;
-    var maxFiles = 3;
-    var validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp']; 
+    const fileInput = e.target;
+    const maxFiles = 3;
+    const validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
 
     if (fileInput.files.length > maxFiles) {
         alert(`You can only upload a maximum of ${maxFiles} files.`);
         fileInput.value = '';
         document.getElementById(errorId).textContent = `You can only upload a maximum of ${maxFiles} files.`;
-        return; 
+        return;
     }
 
-    for (var i = 0; i < fileInput.files.length; i++) {
-        var file = fileInput.files[i];
-        var extension = file.name.split('.').pop().toLowerCase();
+    for (let i = 0; i < fileInput.files.length; i++) {
+        const file = fileInput.files[i];
+        const extension = file.name.split('.').pop().toLowerCase();
         if (!validExtensions.includes(extension)) {
             alert('Please upload only image files (jpg, jpeg, png, gif, webp).');
             fileInput.value = '';
             document.getElementById(errorId).textContent = 'Please upload only image files (jpg, jpeg, png, gif, webp).';
-            return; 
+            return;
         }
     }
 
@@ -756,11 +754,11 @@ function validateImages(e, errorId) {
 }
 
 function validateCategory() {
-    const categoryInputs = document.querySelectorAll('input[name="category"]:checked');
+    const categoryDropdown = document.getElementById('category-dropdown');
     const categoryError = document.getElementById('categoryError');
 
-    if (categoryInputs.length === 0) {
-        categoryError.innerText = 'Please select at least one category.';
+    if (categoryDropdown.value === '') {
+        categoryError.innerText = 'Please select a category.';
         return false;
     } else {
         categoryError.innerText = '';

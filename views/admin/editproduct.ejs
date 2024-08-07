@@ -239,7 +239,7 @@
                                 </div>
                                 
          
-<div class="mb-4">
+<!-- <div class="mb-4">
     <label for="category-dropdown">Category:</label>
    
         <% if(cateData.length > 0) { %>
@@ -255,9 +255,32 @@
          <% } %>
     
     <div id="categoryError" class="text-danger"></div> 
+</div> -->
+
+<!-- <div class="mb-4">
+    <label for="category-dropdown">Category:</label>
+    <select class="form-select" id="category-dropdown" name="category">
+        <option value="">Select a category</option>
+        <% if (cateData.length > 0) { 
+            for (let i = 0; i < cateData.length; i++) { %>
+                <option value="<%= cateData[i]._id %>" <%= cateData[i]._id === cateData ? 'selected' : '' %>><%= cateData[i].name %></option>
+            <% }
+        } %>
+    </select>
+    <div id="categoryError" class="text-danger"></div>
+</div> -->
+<div class="mb-4">
+    <label for="category-dropdown">Category:</label>
+    <select class="form-select" id="category-dropdown" name="category">
+        <option value="<%= proData.category._id %>" ><%= proData.category.name %></option>
+        <% if (cateData.length > 0) { 
+            for (let i = 0; i < cateData.length; i++) { %>
+                <option value="<%= cateData[i]._id %>" <%= cateData[i]._id === cateData ? ' selected ' : '' %>><%= cateData[i].name %></option>
+            <% }
+        } %>
+    </select>
+    <div id="categoryError" class="text-danger"></div>
 </div>
-
-
 
 <div class="mb-4">
     <label for="product_images" class="form-label">Images</label>
@@ -385,6 +408,18 @@ function validateInput(inputId, pattern, errorId, errorMessage) {
     }
 }
 
+// function validateCategory() {
+//     const categorySelect = document.querySelector('select[name="category"]');
+//     const categoryError = document.getElementById('categoryError');
+//     if (!categorySelect.value) {
+//         categoryError.innerText = 'Please select a category.';
+//         return false;
+//     } else {
+//         categoryError.innerText = '';
+//         return true;
+//     }
+// }
+
 function validateCategory() {
     const categorySelect = document.querySelector('select[name="category"]');
     const categoryError = document.getElementById('categoryError');
@@ -396,8 +431,6 @@ function validateCategory() {
         return true;
     }
 }
-
-
 
     </script>
 </body>

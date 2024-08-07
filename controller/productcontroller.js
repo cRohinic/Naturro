@@ -127,7 +127,7 @@ const addProduct = async (req, res) => {
     const loadEdit =  async(req,res)=>{
         try{
             const id = req.query.id;
-            const  proData = await productModel.findById(id);
+            const  proData = await productModel.findById(id).populate('category');
 
 
             const cateData =  await categoryModel.find({});
