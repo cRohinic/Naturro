@@ -766,7 +766,8 @@
                                                                 </div>
                                                                 <div class="content-right">
                                                                     <span class="old-price"><DEL>₹<%= product[i].price %></DEL></span>
-                                                                    <span class="discount-price">₹<%= product[i].discountPrice %></span>
+                                                                    <!-- <span class="discount-price">₹<%= product[i].discountPrice %></span> -->
+                                                                    <span class="discount-price">₹<%= product[i].price-product[i].discountPrice %></span>
                                                                 </div>
                                                             </div>
                                                             <div class="content-right">

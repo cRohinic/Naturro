@@ -404,9 +404,11 @@ console.log(arr[0],'delivvvvvvveeeeeeeeeerrrrrrrrrr');
               product.countInStock -= item.quantity;
               await product.save();
           }
+          
 
           // Clear the cart
           cart.items = [];
+          cart.billTotal=0
           await cart.save();
           const resurl = orderData._id;
           console.log("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
@@ -486,6 +488,7 @@ const failedPayment = async (req, res) => {
         }
 
         orders.paymentStatus='Pending';
+        
         await orders.save();
         res.status(200).json({ orderId});
     } catch (error) {
